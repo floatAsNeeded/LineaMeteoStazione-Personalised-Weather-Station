@@ -28,4 +28,4 @@ The project is aimed as DIY weather station with customized choose of sensors an
 
 •	Can send data to Wunderground, Weathercloud, Blynk, ThingSpeak and LineaMeteo weather network! The frequency of sending data is also selectable in the menu config for all services in the database.
 
-•	In the Display you can select languages between Italian and English and between metric and imperial unit of measurement of data.
+• Display selectable languages between Italian and English and between metric and imperial unit of measurement of data.
