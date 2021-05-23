@@ -33,7 +33,7 @@ The project is aimed as DIY weather station with customized choose of sensors an
 
 # Testing and Current Consumption
 
-Tested with Arduino IDE 1.8.13 and ESP Board Manager version 2.7.4
+Tested with Arduino IDE 1.8.13 and ESP8266 Board Manager version 2.7.4. 
 
 SPECIFICATION DEVICE 1
 
