@@ -29,3 +29,22 @@ The project is aimed as DIY weather station with customized choose of sensors an
 •	Can send data to Wunderground, Weathercloud, Blynk, ThingSpeak and LineaMeteo weather network! The frequency of sending data is also selectable in the menu config for all services in the database.
 
 • Display selectable languages between Italian and English and between metric and imperial unit of measurement of data.
+
+
+# Testing and Current Consumption
+
+Tested with Arduino IDE 1.8.13 and ESP Board Manager version 2.7.4
+
+SPECIFICATION DEVICE 1
+
+Attiny85 use 0.5mA in average, when wind activate it can reach 1mA.
+Ezsbc Board are great board with current in deep sleep of just 12uA.
+DEVICE 1 with all components connected use 0.8mA when sleeping in average and peak of 100mA when waking up.
+
+
+SPECIFICATION DEVICE 2
+Average current of 90mA.
+
+SPECIFICATION DEVICE 3
+Deep Sleep of 1mA because of BME680 sensor.
+100mA when waking up.
