@@ -79,8 +79,8 @@ byte REPORTHOUR;
 #define SMTP_PORT 25
 
 /* The log in credentials */
-#define AUTHOR_EMAIL ""
-#define AUTHOR_PASSWORD ""
+String AUTHOR_EMAIL;
+String AUTHORPASSWORD;
 
 /* The SMTP Session object used for Email sending */
 SMTPSession smtp;
@@ -134,6 +134,7 @@ String Latitude;
 String Longitude;
 String City;
 String Altitude;
+String StringLineaMeteo;
 
 //DEWPOINT CALCULATION CONSTANTS//
 #define c1 -8.78469475556
@@ -829,8 +830,8 @@ void EMAILNOTIFICATION()
       /* Set the session config */
       session.server.host_name = SMTP_HOST;
       session.server.port = SMTP_PORT;
-      session.login.email = AUTHOR_EMAIL;
-      session.login.password = AUTHOR_PASSWORD;
+      session.login.email = AUTHOR_EMAIL.c_str();
+      session.login.password = AUTHORPASSWORD.c_str();
       session.login.user_domain = "mydomain.net";
 
       /* Declare the message class */
@@ -838,7 +839,7 @@ void EMAILNOTIFICATION()
 
       /* Set the message headers */
       message.sender.name = "LineaMeteoStazione";
-      message.sender.email = AUTHOR_EMAIL;
+      message.sender.email = AUTHOR_EMAIL.c_str();
       message.subject = "BATTERY ALERT from your Weather Station!";
       message.addRecipient("Admin", EMAILACCOUNT.c_str());
       message.html.content = "<b><span style=\"color:#ff0000;\">Battery Level is lower than 3.45V, ALWAYS USE PROTECTED BATTERIES!</span></b><br><br>The Weather Station is already entered in BatterySaving Mode with 30 minutes sample time period.<br><br>Please check that solar panel or battery are currently working and installed correctly or that the solar panel installed has the correct wattage depending on your location.<br> Please check the instruction Manual and other information <a href=https://github.com/floatAsNeeded/LineaMeteoStazione-Personalised-Weather-Station> HERE</a> for more information.";
@@ -898,8 +899,8 @@ void EMAILNOTIFICATION()
       /* Set the session config */
       session.server.host_name = SMTP_HOST;
       session.server.port = SMTP_PORT;
-      session.login.email = AUTHOR_EMAIL;
-      session.login.password = AUTHOR_PASSWORD;
+      session.login.email = AUTHOR_EMAIL.c_str();
+      session.login.password = AUTHORPASSWORD.c_str();
       session.login.user_domain = "mydomain.net";
 
       /* Declare the message class */
@@ -907,7 +908,7 @@ void EMAILNOTIFICATION()
 
       /* Set the message headers */
       message.sender.name = "LineaMeteoStazione";
-      message.sender.email = AUTHOR_EMAIL;
+      message.sender.email = AUTHOR_EMAIL.c_str();
       message.subject = "AVVISO DI BATTERIA dalla tua LineaMeteoStazione Stazione Meteo!";
       message.addRecipient("Admin", EMAILACCOUNT.c_str());
       message.html.content = "<b><span style=\"color:#ff0000;\">Il livello della batteria è al momento inferiore a 3.4V. RICORDATI DI USARE SEMPRE BATTERIE PROTETTE!</span></b><br><br>La Stazione Meteo è già entrata in modalità di risparmio energetico con un periodo di campionamento di 30 minuti.<br><br>Si prega di verificare che il pannello solare o la batteria funzionino e siano installati correttamente o che il pannello solare installato abbia il wattaggio corretto a seconda della posizione geografica.<br>Per ulteriori informazioni consultare il manuale e altre informazioni <a href=https://github.com/floatAsNeeded/LineaMeteoStazione-Personalised-Weather-Station> QUI</a>";
@@ -972,8 +973,8 @@ void EMAILNOTIFICATION()
       /* Set the session config */
       session.server.host_name = SMTP_HOST;
       session.server.port = SMTP_PORT;
-      session.login.email = AUTHOR_EMAIL;
-      session.login.password = AUTHOR_PASSWORD;
+      session.login.email = AUTHOR_EMAIL.c_str();
+      session.login.password = AUTHORPASSWORD.c_str();
       session.login.user_domain = "mydomain.net";
 
       /* Declare the message class */
@@ -981,7 +982,7 @@ void EMAILNOTIFICATION()
 
       /* Set the message headers */
       message.sender.name = "LineaMeteoStazione";
-      message.sender.email = AUTHOR_EMAIL;
+      message.sender.email = AUTHOR_EMAIL.c_str();
       message.subject = "BATTERY Notification from your LineaMeteoStazione Weather Station!";
       message.addRecipient("Admin", EMAILACCOUNT.c_str());
       message.html.content = "The battery is almost fully charged with 4.1V.<br> Although is good to have a good battery level for the Weather Station to be autonomous, it is not recommended to have for long periods a battery voltage of more than 4.1V. <br> For a better battery life and for a safe battery operation, use a solar panel that doesn't let the battery be for too long at more than 4.1V. <br> Sample time is now set to every minute.";
@@ -1040,8 +1041,8 @@ void EMAILNOTIFICATION()
       /* Set the session config */
       session.server.host_name = SMTP_HOST;
       session.server.port = SMTP_PORT;
-      session.login.email = AUTHOR_EMAIL;
-      session.login.password = AUTHOR_PASSWORD;
+      session.login.email = AUTHOR_EMAIL.c_str();
+      session.login.password = AUTHORPASSWORD.c_str();
       session.login.user_domain = "mydomain.net";
 
       /* Declare the message class */
@@ -1049,7 +1050,7 @@ void EMAILNOTIFICATION()
 
       /* Set the message headers */
       message.sender.name = "LineaMeteoStazione";
-      message.sender.email = AUTHOR_EMAIL;
+      message.sender.email = AUTHOR_EMAIL.c_str();
       message.subject = "Notifica BATTERIA dalla tua Stazione Meteo LineaMeteoStazione!";
       message.addRecipient("Admin", EMAILACCOUNT.c_str());
       message.html.content = "La batteria è quasi completamente carica con 4.1V. <br> Anche se è bene avere un buon livello di batteria per la stazione meteorologica per consentire un funzionamento autonomo, non è consigliabile avere per lunghi periodi la tensione della batteria superiore a 4.1V. <br> Per una migliore durata nel tempo della batteria e per un funzionamento sicuro della batteria, si consiglia di utilizzare un pannello solare che non permetta alla batteria di restare troppo a lungo con una tensione superiore a 4,1 V. <br> Il tempo di campionamento è ora impostato su 60 secondi.";
@@ -1116,15 +1117,15 @@ void EMAILNOTIFICATION()
         /* Set the session config */
         session.server.host_name = SMTP_HOST;
         session.server.port = SMTP_PORT;
-        session.login.email = AUTHOR_EMAIL;
-        session.login.password = AUTHOR_PASSWORD;
+        session.login.email = AUTHOR_EMAIL.c_str();
+        session.login.password = AUTHORPASSWORD.c_str();
         session.login.user_domain = "mydomain.net";
 
         /* Declare the message class */
         SMTP_Message message;
         /* Set the message headers */
         message.sender.name = "LineaMeteoStazione";
-        message.sender.email = AUTHOR_EMAIL;
+        message.sender.email = AUTHOR_EMAIL.c_str();
         message.subject = "Today's Report from your Weather Station";
         message.addRecipient("Admin", EMAILACCOUNT.c_str());
         String html_msg =  "<br>Temperature is " + String(temp, 1) + "°C<br>Humidity is " + String(humidity) + "%<br>Pressure is " + String(pressurehpa, 1) + "hPa<br>Wind Speed is " + String(WindSpeed, 1) + "km/h from " + DIRECTIONWIND + "<br>Rain Today " + String(mmPioggia, 1) + "mm<br>Rain Intensity is " + String(rainrate, 1) + "mm/h<br>Current UV is " + String(UVindex, 1) + "<br>Solar Radiation is " + String(SolarRadiation, 1) + "W/m2<br><br><b>Daily Weather Observations</b><br><br>Highest " + String(maxTemp, 1) + "°C<br>Lowest " + String(minTemp, 1) + "°C<br>Gust " + String(Gust, 1) + "km/h<br>Maximum Intensity of Rain " + String(rainrateMax, 1) + "mm/h<br><br><i>To stop this notification go to Services/EmailAlert/EmailReport and type OFF</i>";
@@ -1189,15 +1190,15 @@ void EMAILNOTIFICATION()
         /* Set the session config */
         session.server.host_name = SMTP_HOST;
         session.server.port = SMTP_PORT;
-        session.login.email = AUTHOR_EMAIL;
-        session.login.password = AUTHOR_PASSWORD;
+        session.login.email = AUTHOR_EMAIL.c_str();
+        session.login.password = AUTHORPASSWORD.c_str();
         session.login.user_domain = "mydomain.net";
 
         /* Declare the message class */
         SMTP_Message message;
         /* Set the message headers */
         message.sender.name = "LineaMeteoStazione";
-        message.sender.email = AUTHOR_EMAIL;
+        message.sender.email = AUTHOR_EMAIL.c_str();
         message.subject = "Resoconto Giornaliero dalla tua Stazione Meteo";
         message.addRecipient("Admin", EMAILACCOUNT.c_str());
         String html_msg =  "<br>Temperatura attuale" + String(temp, 1) + "°C<br>Umidità relativa " + String(humidity) + "%<br>Pressione Atmosferica " + String(pressurehpa, 1) + "hPa<br>Velocità del vento " + String(WindSpeed, 1) + "km/h from " + DIRECTIONWIND + "<br>Precipitazioni oggi " + String(mmPioggia, 1) + "mm<br>Intensità della pioggia " + String(rainrate, 1) + "mm/h<br>Indice UV " + String(UVindex, 1) + "<br>Radiazione Solare " + String(SolarRadiation, 1) + "W/m2<br><br><b>Estremi Giornalieri</b><br><br>Temperatura Massima " + String(maxTemp, 1) + "°C<br>Temperatura Minima " + String(minTemp, 1) + "°C<br>Raffica di Vento " + String(Gust, 1) + "km/h<br>Maximum Intensity of Rain " + String(rainrateMax, 1) + "mm/h<br><br><br><i>Se vuoi rimuovere queste notifiche vai su Services/EmailAlert/EmailReport e digita OFF</i>";
@@ -1268,8 +1269,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1277,7 +1278,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperature Max Alert SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Temperature reached " + String(temp, 1) + "°C" + " more than the threshold set of " + String(TEMPERATUREMAXALERT, 1) + "°C" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT3x/Temperature/Enable and type OFF</i>";
@@ -1338,8 +1339,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1347,7 +1348,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperatura Massima Allerta SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La Temperatura ha raggiunto " + String(temp, 1) + "°C" + " più del limite impostato di " + String(TEMPERATUREMAXALERT, 1) + "°C" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT3x/Temperature/Enable e digita OFF</i>";
@@ -1416,8 +1417,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1425,7 +1426,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperature Min Alert SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Temperature reached " + String(temp, 1) + "°C" + " less than the threshold set of " + String(TEMPERATUREMAXALERT, 1) + "°C" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT3x/Temperature/Enable and type OFF</i>";
@@ -1486,8 +1487,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1495,7 +1496,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperatura Minima Allerta SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La Temperatura ha raggiunto " + String(temp, 1) + "°C" + " meno del limite impostato di " + String(TEMPERATUREMAXALERT, 1) + "°C" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT3x/Temperature/Enable e digita OFF</i>";
@@ -1565,8 +1566,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1574,7 +1575,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperature Min Alert SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Temperature reached " + String(tempSHT2x, 1) + "°C" + " less than the threshold set of " + String(TEMPERATUREMINALERTSECOND, 1) + "°C" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT2x/Temperature/Enable and type OFF</i>";
@@ -1635,8 +1636,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1644,7 +1645,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperatura Minima Allerta SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La Temperatura ha raggiunto " + String(tempSHT2x, 1) + "°C" + " meno del limite impostato di " + String(TEMPERATUREMINALERTSECOND, 1) + "°C" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT2x/Temperature/Enable e digita OFF</i>";
@@ -1711,8 +1712,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1720,7 +1721,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperature Max Alert SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Temperature reached " + String(tempSHT2x, 1) + "°C" + " more than the threshold set of " + String(TEMPERATUREMAXALERTSECOND, 1) + "°C" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT2x/Temperature/Enable and type OFF</i>";
@@ -1781,8 +1782,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1790,7 +1791,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Temperatura Massima Allerta SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La Temperatura ha raggiunto " + String(tempSHT2x, 1) + "°C" + " più del limite impostato di " + String(TEMPERATUREMAXALERTSECOND, 1) + "°C" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT2x/Temperature/Enable e digita OFF</i>";
@@ -1860,8 +1861,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1869,7 +1870,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Humidity Max Alert SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Humidity reached " + String(humidity) + "%" + " more than the threshold set of " + String(HUMIDITYMAXALERT) + "%" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT3x/Humidity/Enable and type OFF</i>";
@@ -1930,8 +1931,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -1939,7 +1940,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Umidità Massima Allerta SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'Umidità ha raggiunto " + String(humidity) + "%" + " più del limite impostato di " + String(HUMIDITYMAXALERT) + "%" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT3x/Humidity/Enable e digita OFF</i>";
@@ -2006,8 +2007,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2015,7 +2016,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Humidity Min Alert SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Humidity reached " + String(humidity) + "%" + " less than the threshold set of " + String(HUMIDITYMINALERT) + "%" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT3x/Humidity/Enable and type OFF</i>";
@@ -2076,8 +2077,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2085,7 +2086,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Umidità Minima Allerta SHT3x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'Umidità ha raggiunto " + String(humidity) + "%" + " meno del limite impostato di " + String(HUMIDITYMINALERT) + "%" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT3x/Humidity/Enable e digita OFF</i>";
@@ -2155,8 +2156,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2164,7 +2165,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Humidity Max Alert SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Humidity reached " + String(humiditySHT2x) + "%" + " more than the threshold set of " + String(HUMIDITYMAXALERTSECOND) + "%" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT2x/Humidity/Enable and type OFF</i>";
@@ -2225,8 +2226,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2234,7 +2235,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Umidità Massima Allerta SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'Umidità ha raggiunto " + String(humiditySHT2x) + "%" + " più del limite impostato di " + String(HUMIDITYMAXALERTSECOND) + "%" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT2x/Humidity/Enable e digita OFF</i>";
@@ -2301,8 +2302,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2310,7 +2311,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Humidity Min Alert SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Humidity reached " + String(humiditySHT2x) + "%" + " less than the threshold set of " + String(HUMIDITYMINALERTSECOND) + "%" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/SHT2x/Humidity/Enable and type OFF</i>";
@@ -2371,8 +2372,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2380,7 +2381,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Umidità Minima Allerta SHT2x";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'Umidità ha raggiunto " + String(humiditySHT2x) + "%" + " meno del limite impostato di " + String(HUMIDITYMINALERTSECOND) + "%" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/SHT2x/Humidity/Enable e digita OFF</i>";
@@ -2450,8 +2451,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2459,7 +2460,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Wind Speed Alert, Gust Max";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "The Wind Speed reached " + String(GustMax, 1) + "km/h" + " more than the threshold set of " + String(GUSTALERT, 1) + "km/h" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/Gust/Enable and type OFF</i>";
@@ -2520,8 +2521,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2529,7 +2530,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Raffica Massima di vento allerta";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La velocità del vento ha raggiunto " + String(GustMax, 1) + "km/h" + " più del limite impostato di " + String(GUSTALERT, 1) + "km/h" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/Gust/Enable e digita OFF</i>";
@@ -2599,8 +2600,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2608,7 +2609,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Precipitation Alert";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Rain precipitation today reached " + String(mmPioggia, 1) + "mm" + " more than the threshold set of " + String(RAINALERT, 1) + "mm" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/Rain/Enable and type OFF</i>";
@@ -2669,8 +2670,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2678,7 +2679,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Precipitazioni Pioggia Allerta";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "La pioggia accumulata oggi è " + String(mmPioggia, 1) + "mm" + " più del limite impostato di " + String(RAINALERT, 1) + "mm" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/Rain/Enable e digita OFF</i>";
@@ -2746,8 +2747,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2755,7 +2756,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Precipitation Intensity Alert";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Rain Intensity today reached " + String(rainrateMax, 1) + "mm/h" + " more than the threshold set of " + String(RAININTENSITYALERT, 1) + "mm/h" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/Rain/Enable and type OFF</i>";
@@ -2816,8 +2817,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2825,7 +2826,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Allerta Intensità pioggia";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'intensità della pioggia ha raggiunto " + String(rainrateMax, 1) + "mm/h" + " più del limite impostato di " + String(RAININTENSITYALERT, 1) + "mm/h" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/Rain/Enable e digita OFF</i>";
@@ -2895,8 +2896,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2904,7 +2905,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "UV Index Alert";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "The UV index reached " + String(UVindex) + " more than the threshold set of " + String(UVALERT) + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/UV/Enable and type OFF</i>";
@@ -2965,8 +2966,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -2974,7 +2975,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Indice UV allerta";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'indice UV ha raggiunto " + String(UVindex) + " più del limite impostato di " + String(UVindex) + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/UV/Enable e digita OFF</i>";
@@ -3044,8 +3045,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -3053,7 +3054,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Heat Index Alert";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "Heat Index today reached " + String(heatIndex, 1) + "°C" + " more than the threshold set of " + String(HEATINDEXALERT, 1) + "°C" + "<br><br><i>To stop all alert notification go to Services/EmailAlert/EmailAlert and type OFF or to stop just this notification go to Services/EmailAlert/HeatIndex/Enable and type OFF</i>";
@@ -3114,8 +3115,8 @@ void EMAILNOTIFICATION()
           /* Set the session config */
           session.server.host_name = SMTP_HOST;
           session.server.port = SMTP_PORT;
-          session.login.email = AUTHOR_EMAIL;
-          session.login.password = AUTHOR_PASSWORD;
+          session.login.email = AUTHOR_EMAIL.c_str();
+          session.login.password = AUTHORPASSWORD.c_str();
           session.login.user_domain = "mydomain.net";
 
           /* Declare the message class */
@@ -3123,7 +3124,7 @@ void EMAILNOTIFICATION()
 
           /* Set the message headers */
           message.sender.name = "LineaMeteoStazione";
-          message.sender.email = AUTHOR_EMAIL;
+          message.sender.email = AUTHOR_EMAIL.c_str();
           message.subject = "Allerta Indice di Calore";
           message.addRecipient("Admin", EMAILACCOUNT.c_str());
           String html_msg = "L'Indice di Calore ha raggiunto " + String(heatIndex, 1) + "°C" + " più del limite impostato di " + String(HEATINDEXALERT, 1) + "°C" + "<br><br><br><i>Se vuoi rimuovere tutte queste notifiche vai su Services/EmailAlert/EmailAlert e digita OFF o solo questa notifica vai su Services/EmailAlert/HeatIndex/Enable e digita OFF</i>";
@@ -3391,6 +3392,10 @@ void SetupData()
   {
     RESETDATA = Weather.intData();
   }
+  else
+  {
+    Serial.println(Weather.errorReason());
+  }
   if (RESETDATA == 0)
   {
     Firebase.setInt(Weather, "Wind/Offset", 0);
@@ -3417,7 +3422,10 @@ void SetupData()
     Firebase.setString(Weather, "Services/OpenWeather/API", "API");
     Firebase.setString(Weather, "Services/OpenWeather/Hemisphere", "north or south");
     Firebase.setString(Weather, "Display/Language", "en");
-    Firebase.setString(Weather, "Display/Units", "metric");
+    Firebase.setString(Weather, "Display/Units/Temperature", "metric");
+    Firebase.setString(Weather, "Display/Units/Pressure", "metric");
+    Firebase.setString(Weather, "Display/Units/Wind", "metric");
+    Firebase.setString(Weather, "Display/Units/Rain", "metric");
     Firebase.setString(Weather, "Display/FastRefresh", "NO");
     Firebase.setString(Weather, "Services/OpenWeather/Latitude", "- for South + for North");
     Firebase.setString(Weather, "Services/OpenWeather/Longitude", "- for West + for East");
@@ -3425,6 +3433,9 @@ void SetupData()
     Firebase.setString(Weather, "Services/LineaMeteo/Longitude", "- for West + for East");
     Firebase.setString(Weather, "Services/LineaMeteo/City", "Perugia(PG)");
     Firebase.setString(Weather, "Services/LineaMeteo/Altitude", "0m s.l.m.");
+    Firebase.setString(Weather, "Services/LineaMeteo/WebServerString", "disable");
+    Firebase.setString(Weather, "Services/EmailAlert/EmailAccountForSMPT", "account_forSMPT@gmail.com");
+    Firebase.setString(Weather, "Services/EmailAlert/Password", "PasswordofaccountforSMPT");
     Firebase.setString(Weather, "Services/EmailAlert/EmailAccountForNotification", "account_to_send@gmail.com");
     Firebase.setString(Weather, "Services/EmailAlert/EmailReport", "OFF");
     Firebase.setString(Weather, "Services/EmailAlert/EmailAlert", "OFF");
@@ -3553,6 +3564,21 @@ void getDataTime()
     Altitude = Weather.stringData();
   }
 
+  if (Firebase.getString(Weather, "Services/LineaMeteo/WebServerString"))
+  {
+    StringLineaMeteo = Weather.stringData();
+  }
+
+  if (Firebase.getString(Weather, "Services/EmailAlert/EmailAccountForSMPT"))
+  {
+    AUTHOR_EMAIL = Weather.stringData();
+  }
+
+  if (Firebase.getString(Weather, "Services/EmailAlert/Password"))
+  {
+    AUTHORPASSWORD = Weather.stringData();
+  }
+
   if (Firebase.getString(Weather, "Services/EmailAlert/EmailAccountForNotification"))
   {
     EMAILACCOUNT = Weather.stringData();
@@ -3598,7 +3624,7 @@ void getDataTime()
 
 void setup()
 {
-  //Serial.begin(115200);
+  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   //wifiManager.resetSettings();
   wifiManager.setConfigPortalTimeout(300);
@@ -3620,19 +3646,23 @@ void setup()
   }
   timeClient.begin();   // Start the NTP UDP client
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);   // connect to firebase
+  Serial.println(Weather.errorReason());
   Firebase.reconnectWiFi(true);
   Firebase.setMaxRetry(Weather, 2);
-  //Weather.setBSSLBufferSize(1024, 1024);
+  //Weather.setBSSLBufferSize(1024, 512);
   //Set the size of HTTP response buffers in the case where we want to work with large data.
   //Weather.setResponseSize(1024);
   //char auth[] = APIBLYNK.c_str();WiFi.SSID().c_str()
 
   SetupData();
   getDataTime();
-  server.begin();
+  if (StringLineaMeteo == "enable")
+  {
+    server.begin();
+  }
   Wire.begin();
   bmp.begin();
-  //smtp.debug(1);
+  smtp.debug(1);
   if (BLYNKONOFF == "ON")
   {
     //Blynk.begin(APIBLYNK.c_str(), WiFi.SSID().c_str(), WiFi.psk().c_str(), ServerBlynk.c_str(), Port);
@@ -3649,8 +3679,12 @@ void loop()
   writeData();
   gettime();
   EMAILNOTIFICATION();
-  lineameteo();
+  if (StringLineaMeteo == "enable")
+  {
+    lineameteo();
+  }
 }
+
 
 void smtpCallback(SMTP_Status status)
 {
