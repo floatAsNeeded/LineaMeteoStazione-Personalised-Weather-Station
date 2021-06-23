@@ -55,7 +55,7 @@ String VisibilityDisplay;
 String api_key;
 String latitude; // 90.0000 to -90.0000 negative for Southern hemisphere
 String longitude; // 180.000 to -180.000 negative for West
-String units = "imperial";
+String units = "metric";
 String unitsPressure;
 String unitsTemperature;
 String unitsRain;
