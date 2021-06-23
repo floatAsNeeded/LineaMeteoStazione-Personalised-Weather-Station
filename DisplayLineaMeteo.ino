@@ -30,6 +30,8 @@ WiFiManager wifiManager;
 LC709203F gg;  // create a gas gauge object.
 uint8_t percentage;
 float voltage;
+float VOLTAGEOUT;
+byte PERCENTAGEOUT;
 
 ////////////////////*********FIREBASE DETAILS************///////////////////////////////////
 #define FIREBASE_HOST ""                 // the project name address from firebase id
@@ -53,7 +55,11 @@ String VisibilityDisplay;
 String api_key;
 String latitude; // 90.0000 to -90.0000 negative for Southern hemisphere
 String longitude; // 180.000 to -180.000 negative for West
-String units;
+String units = "imperial";
+String unitsPressure;
+String unitsTemperature;
+String unitsRain;
+String unitsWind;
 String language;   // See notes tab
 String Hemisphere;
 //CONVERSION TO IMPERIAL//
@@ -221,6 +227,10 @@ void getDataTime()
   {
     TIMEZONE = Weather.intData();
   }
+  else
+  {
+    //Serial.println(Weather.errorReason());
+  }
   /*if (Firebase.getInt(Weather, "Pressure/Calibration"))
     {
     CALIBRATION = Weather.intData();
@@ -245,9 +255,21 @@ void getDataTime()
   {
     Hemisphere = Weather.stringData();
   }
-  if (Firebase.getString(Weather, "Display/Units"))
+  if (Firebase.getString(Weather, "Display/Units/Temperature"))
   {
-    units = Weather.stringData();
+    unitsTemperature = Weather.stringData();
+  }
+  if (Firebase.getString(Weather, "Display/Units/Wind"))
+  {
+    unitsWind = Weather.stringData();
+  }
+  if (Firebase.getString(Weather, "Display/Units/Rain"))
+  {
+    unitsRain = Weather.stringData();
+  }
+  if (Firebase.getString(Weather, "Display/Units/Pressure"))
+  {
+    unitsPressure = Weather.stringData();
   }
 }
 
@@ -389,17 +411,35 @@ String CalculateIAQ(float score) {
 void getValues()
 {
   gettime();
-  if (units == "imperial")
+  if (unitsPressure == "imperial")
+  {
+    constantpressure = 33.86;
+    MeasurementUnitPressure = "inHg";
+  }
+  if (unitsRain == "imperial")
+  {
+    MeasurementUnitRain = "in";
+    constantrain = 25.4;
+  }
+  if (unitsWind == "imperial")
+  {
+    constantwind = 1.609;
+    MeasurementUnitWind = "mp/h";
+  }
+  if (unitsTemperature == "imperial")
   {
     constantF = 1.8;
     constantF32 = 32;
-    constantpressure = 33.86;
-    constantrain = 25.4;
-    constantwind = 1.609;
     SymbolTemperature = "°F";
-    MeasurementUnitPressure = "inHg";
-    MeasurementUnitRain = "in";
-    MeasurementUnitWind = "mp/h";
+  }
+
+  if (Firebase.getFloat(Weather, "Battery/CellVoltage"))
+  {
+    VOLTAGEOUT = Weather.floatData();
+  }
+  if (Firebase.getInt(Weather, "Battery/CellPercentage"))
+  {
+    PERCENTAGEOUT = Weather.intData();
   }
   if (Firebase.getFloat(Weather, "SHT3x/Offset"))
   {
@@ -595,8 +635,10 @@ void DrawHeadingSection() {
   }
 
 
-  drawString(SCREEN_WIDTH, 0, "LineaMeteoStazione", RIGHT);
+  //drawString(SCREEN_WIDTH, 0, "LineaMeteoStazione", RIGHT);
+
   DrawBattery(25, 12);
+  DrawBatteryOUTSIDE(25, 12);
   display.drawLine(0, 12, SCREEN_WIDTH, 12, GxEPD_BLACK);
 }
 
@@ -1370,12 +1412,24 @@ void Visibility(int x, int y, String Visi) {
 //DEVICE STATUS//
 void DrawBattery(int x, int y) {
   uint8_t percentage = gg.cellRemainingPercent10() / 10;
-  float voltage = gg.cellVoltage_mV() / 1000.0;
-  display.drawRect(x + 15, y - 12, 19, 10, GxEPD_BLACK);
-  display.fillRect(x + 34, y - 10, 2, 5, GxEPD_BLACK);
-  display.fillRect(x + 17, y - 10, 15 * percentage / 100.0, 6, GxEPD_BLACK);
-  drawString(x + 70, y - 11, String(percentage) + " % ", RIGHT);
-  drawString(x + 20, y - 11, String(voltage, 1) + " V ", RIGHT);
+  //float voltage = gg.cellVoltage_mV() / 1000.0;
+  display.drawRect(x + 5, y - 12, 19, 10, GxEPD_BLACK);
+  display.fillRect(x + 24, y - 10, 2, 5, GxEPD_BLACK);
+  display.fillRect(x + 7, y - 10, 15 * percentage / 100.0, 6, GxEPD_BLACK);
+  drawString(x + 60, y - 11, String(percentage) + " % ", RIGHT);
+  drawString(x + 1, y - 11, "IN", RIGHT);
+  //drawString(x + 20, y - 11, String(voltage, 1) + " V ", RIGHT);
+}
+
+void DrawBatteryOUTSIDE(int x, int y) {
+  uint8_t percentage = PERCENTAGEOUT;
+  float voltage = VOLTAGEOUT;
+  display.drawRect(x + 325, y - 12, 19, 10, GxEPD_BLACK);
+  display.fillRect(x + 344, y - 10, 2, 5, GxEPD_BLACK);
+  display.fillRect(x + 327, y - 10, 15 * percentage / 100.0, 6, GxEPD_BLACK);
+  drawString(x + 290, y - 11, "OUT ->", RIGHT);
+  drawString(x + 375, y - 11, String(percentage) + " % ", RIGHT);
+  drawString(x + 333, y - 11, String(voltage) + " V ", RIGHT);
 }
 
 
@@ -1425,6 +1479,7 @@ void setup() {
     }
   }
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);   // connect to firebase
+  Serial.println(Weather.errorReason());
   Firebase.reconnectWiFi(true);
   Firebase.setMaxRetry(Weather, 2);
   timeClient.begin();
