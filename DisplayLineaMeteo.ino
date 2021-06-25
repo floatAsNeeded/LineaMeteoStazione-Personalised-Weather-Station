@@ -424,7 +424,7 @@ void getValues()
   if (unitsWind == "imperial")
   {
     constantwind = 1.609;
-    MeasurementUnitWind = "mp/h";
+    MeasurementUnitWind = "mph";
   }
   if (unitsTemperature == "imperial")
   {
