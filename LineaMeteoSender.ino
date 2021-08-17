@@ -27,10 +27,8 @@ Max44009 myLux(0x4A);
 const int I2CSlaveAddress = 8;      // I2C Address.
 
 ////////////////////*********FIREBASE DETAILS************///////////////////////////////////
-#define FIREBASE_HOST "weather-station-95094.firebaseio.com"                 // the project name address from firebase id
-#define FIREBASE_AUTH "PihHbkRGMXvTPJ7vmJdQmR3wfSvIZPZhJpL86tU0"            // the secret key generated from firebase
-//#define FIREBASE_HOST "trweather-station-default-rtdb.firebaseio.com"                 // the project name address from firebase id
-//#define FIREBASE_AUTH "C0tnTKAzihx9uz7sZ5BiALs8tVeTJBMN9TGK91cR"            // the secret key generated from firebase
+#define FIREBASE_HOST ""                 // the project name address from firebase id
+#define FIREBASE_AUTH ""            // the secret key generated from firebase
 FirebaseData Weather;
 
 //WIND DIRECTION//
