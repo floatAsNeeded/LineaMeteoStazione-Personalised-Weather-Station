@@ -41,7 +41,7 @@ Tested with Arduino IDE 1.8.13, ESP8266 Board Manager version 2.7.4, ESP32 1.0.6
 SPECIFICATION DEVICE 1
 
 Attiny85 use 0.5mA in average, when wind activate it can reach 1mA.
-Ezsbc Board are great board with current in deep sleep of just 12uA.
+Ezsbc Board are great boards with current in deep sleep of just 12uA.
 DEVICE 1 with all components connected use 0.8mA when sleeping in average and peak of 100mA when waking up.
 
 
