@@ -1543,6 +1543,11 @@ void setup() {
       res = wifiManager.autoConnect("LineaMeteoStazioneVisual", "LaMeteo2005");
       if (!res) {
         //Serial.println("Failed to connect");
+        display.fillScreen(GxEPD_WHITE);
+        u8g2Fonts.setFont(u8g2_font_helvB24_tf);
+        drawString(85, 110, "Failed to connect", LEFT);
+        u8g2Fonts.setFont(u8g2_font_helvB18_tf);
+        drawString(35, 180, "Reset or wait 1 minute", LEFT);
         esp_sleep_enable_timer_wakeup(60 * 1000000LL);
         esp_deep_sleep_start();
       }
