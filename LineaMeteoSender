@@ -171,7 +171,7 @@ void setup()
       res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
 
       if (!res) {
-        esp_sleep_enable_timer_wakeup(60 * 1000000LL);
+        esp_sleep_enable_timer_wakeup(300 * 1000000LL);
         esp_deep_sleep_start();
       }
     }
