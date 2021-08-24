@@ -468,6 +468,10 @@ void getValues()
   {
     temp = Weather.floatData() + OffsetTemp;
   }
+  else
+  {
+    Serial.println(Weather.errorReason());
+  }
 
   if (Firebase.getInt(Weather, "SHT3x/Humidity/Humidity"))
   {
