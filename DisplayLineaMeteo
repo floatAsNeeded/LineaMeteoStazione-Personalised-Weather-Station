@@ -37,7 +37,7 @@ byte PERCENTAGEOUT;
 #define FIREBASE_HOST ""                 // the project name address from firebase id
 #define FIREBASE_AUTH ""            // the secret key generated from firebase
 FirebaseData Weather;
-
+FirebaseConfig config;
 
 //////////////////////*********NTP SERVER************//////////////////////////////////////
 #define NTP_OFFSET   60 * 60      // In seconds
@@ -450,9 +450,9 @@ void getValues()
   {
     PERCENTAGEOUT = Weather.intData();
   }
-  if (Firebase.getFloat(Weather, "SHT3x/Offset"))
+  if (Firebase.getFloat(Weather, "SHT3x/Temperature/Offset"))
   {
-    OffsetTemp = Weather.floatData();
+    OffsetTemp = Weather.to<float>();
   }
   if (Firebase.getInt(Weather, "/Wind/Offset"))
   {
@@ -466,7 +466,7 @@ void getValues()
 
   if (Firebase.getFloat(Weather, "SHT3x/Temperature/Temperature"))
   {
-    temp = Weather.floatData() + OffsetTemp;
+    temp = Weather.to<float>() + OffsetTemp;
   }
   else
   {
@@ -1508,7 +1508,7 @@ void DrawBatteryOUTSIDE(int x, int y) {
 
 
 void setup() {
-  //Serial.begin(115200);
+  Serial.begin(115200);
   InitialiseDisplay();
   if (!gg.begin()) {
     while (1) delay(10);
