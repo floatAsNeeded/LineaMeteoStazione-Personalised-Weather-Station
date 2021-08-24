@@ -269,6 +269,11 @@ void readData()
     {
       BatteryVoltage = Weather.floatData();
     }
+    else
+    {
+      Serial.println(Weather.errorReason());
+      ESP.restart();
+    }
 
     if (Firebase.getFloat(Weather, "SHT3x/Temperature/Offset"))
     {
