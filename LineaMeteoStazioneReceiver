@@ -381,7 +381,7 @@ void readData()
     }
     if (Firebase.getInt(Weather, "Inside/AirQuality"))
     {
-      AIRQUALITY = Weather.floatData();
+      AIRQUALITY = Weather.intData();
     }
   }
 }
