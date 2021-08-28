@@ -3354,7 +3354,7 @@ void push_to_weathercloud()
   client.print("/rainrate/"); client.print(rainrate * 10);
   client.print("/uvi/"); client.print(UVindex * 10);
   client.print("/solarrad/"); client.print(SolarRadiation * 10);
-
+  client.print("/aqi/"); client.print(AIRQUALITY * 10);
   client.println("/ HTTP/1.1");
   client.println("Host: api.weathercloud.net");
   client.println("Connection: close");
