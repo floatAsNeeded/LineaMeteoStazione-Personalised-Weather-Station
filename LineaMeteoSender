@@ -1,11 +1,11 @@
 ///////////////////////////////LIBRARY DECLARATION////////////////////////////////////////
 #include <WiFi.h>
-#include <FirebaseESP32.h>
-#include "ClosedCube_SHT31D.h"
-#include "Adafruit_VEML6075.h"
-#include "DFRobot_SHT20.h"
-#include "LC709203F.h"
-#include "Max44009.h"
+#include <FirebaseESP32.h>       //https://github.com/mobizt/Firebase-ESP32
+#include "ClosedCube_SHT31D.h"   //https://github.com/closedcube/ClosedCube_SHT31D_Arduino 
+#include "Adafruit_VEML6075.h"   //https://github.com/adafruit/Adafruit_VEML6075
+#include "DFRobot_SHT20.h"       //https://github.com/DFRobot/DFRobot_SHT20
+#include "LC709203F.h"           //https://github.com/EzSBC/ESP32_Bat_Pro/blob/main/LC709203F.zip
+#include "Max44009.h"            //https://github.com/RobTillaart/Max44009
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 #include <Wire.h>
 WiFiManager wifiManager;
@@ -70,6 +70,7 @@ RTC_DATA_ATTR byte INITDATA = 0;
 byte ReadByte = 0;
 RTC_DATA_ATTR byte Alternate = 0;
 RTC_DATA_ATTR boolean justrestart = true;
+byte WiFiReset = 0;
 
 //////////TEMPERATURE///////////
 //SHT2X//
@@ -83,6 +84,7 @@ int humiditySHT3x; // humidity variable
 
 //////////////UV/////////////////
 float UVindex; // variable UVindex
+byte UVDETECT = 0;
 
 void InitSensors()
 {
@@ -97,14 +99,21 @@ void InitSensors()
   gg.setCellCapacity(LC709203F_APA_3000MAH);
   //gg.setAlarmVoltage(3.4);
   gg.setCellProfile( LC709203_NOM3p7_Charge4p2 ) ;
-  uv.begin();
-  uv.setIntegrationTime(VEML6075_100MS);
-  uv.setHighDynamic(false);
-  uv.setForcedMode(false);
-  uv.setCoefficients(2.22, 1.17,  // UVA_A and UVA_B coefficients
-                     2.95, 1.58,  // UVB_C and UVB_D coefficients
-                     0.004770, 0.006135); // UVA and UVB responses
-
+  if (UVDETECT == 0)
+  {
+    if (! uv.begin()) {
+      UVDETECT = 1;
+    }
+  }
+  if (UVDETECT == 0)
+  {
+    uv.setIntegrationTime(VEML6075_100MS);
+    uv.setHighDynamic(false);
+    uv.setForcedMode(false);
+    uv.setCoefficients(2.22, 1.17,  // UVA_A and UVA_B coefficients
+                       2.95, 1.58,  // UVB_C and UVB_D coefficients
+                       0.004770, 0.006135); // UVA and UVB responses
+  }
   myLux.setAutomaticMode();
 }
 
@@ -127,6 +136,33 @@ void initData()
     if (Firebase.getInt(Weather, "Time/PreviousDay"))
     {
       PreviousDay = Weather.intData();
+    }
+    if (Firebase.getInt(Weather, "Connection/ResetWiFi"))
+    {
+      WiFiReset = Weather.intData();
+    }
+    if (WiFiReset == 1)
+    {
+      WiFiReset = 0;
+      Firebase.setInt(Weather, "Connection/ResetWiFi", 0);
+      wifiManager.resetSettings();
+      WiFi.mode(WIFI_STA);
+      wifiManager.setConfigPortalTimeout(300);
+      WiFi.begin();
+      timeout = millis();
+      while (WiFi.status() != WL_CONNECTED) {
+        delay(250);
+        //Serial.print(".");
+        if (millis() - timeout > 25000)
+        {
+          res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
+
+          if (!res) {
+            esp_sleep_enable_timer_wakeup(300 * 1000000LL);
+            esp_deep_sleep_start();
+          }
+        }
+      }
     }
     INITDATA = 1;
   }
@@ -177,6 +213,7 @@ void setup()
     }
   }
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);   // connect to firebase
+  //Firebase.reconnectWiFi(true);
   Firebase.setMaxRetry(Weather, 2);
   initData();
 }
@@ -196,7 +233,10 @@ void loop()
   ReadSensors();
   WriteData();
   CheckDay();
-  uv.setForcedMode(true);
+  if (UVDETECT == 0)
+  {
+    uv.setForcedMode(true);
+  }
   esp_sleep_enable_timer_wakeup(sampletime * 1000000LL);
   esp_deep_sleep_start();
 }
@@ -356,22 +396,28 @@ void WriteData()
     justrestart = true;
     Alternate = 0;
   }
-  Firebase.setFloat(Weather, "SHT2x/Temperature/Temperature", tempSHT2x);
-  Firebase.setInt(Weather, "SHT2x/Humidity/Humidity", humiditySHT2x);
+  if (humiditySHT2x > 0)
+  {
+    Firebase.setFloat(Weather, "SHT2x/Temperature/Temperature", tempSHT2x);
+    Firebase.setInt(Weather, "SHT2x/Humidity/Humidity", humiditySHT2x);
+  }
   Firebase.setFloat(Weather, "SHT3x/Temperature/Temperature", temperatureSHT3x);
   Firebase.setInt(Weather, "SHT3x/Humidity/Humidity", humiditySHT3x);
   Firebase.setFloat(Weather, "Rain/RainRate", rainrate);
   Firebase.setFloat(Weather, "Wind/WindSpeed", WindSpeed);
   Firebase.setInt(Weather, "Wind/WindDirection", CalDirection);
   Firebase.setFloat(Weather, "Wind/Gust", GustNow);
-  UVindex = uv.readUVI();
-  if (UVindex < 0)
+  if (UVDETECT == 0)
   {
-    Firebase.setFloat(Weather, "Light/UVindex", 0);
-  }
-  else
-  {
-    Firebase.setFloat(Weather, "Light/UVindex", UVindex);
+    UVindex = uv.readUVI();
+    if (UVindex < 0)
+    {
+      Firebase.setFloat(Weather, "Light/UVindex", 0);
+    }
+    else
+    {
+      Firebase.setFloat(Weather, "Light/UVindex", UVindex);
+    }
   }
   Firebase.setFloat(Weather, "Light/Lux", myLux.getLux());
 
