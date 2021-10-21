@@ -1,15 +1,35 @@
 ///////////////////////////////LIBRARY DECLARATION////////////////////////////////////////
+#include <Arduino.h>
+#include <HTTPUpdate.h>
 #include <WiFi.h>
-#include <FirebaseESP32.h>       //https://github.com/mobizt/Firebase-ESP32
-#include "ClosedCube_SHT31D.h"   //https://github.com/closedcube/ClosedCube_SHT31D_Arduino 
-#include "Adafruit_VEML6075.h"   //https://github.com/adafruit/Adafruit_VEML6075
-#include "DFRobot_SHT20.h"       //https://github.com/DFRobot/DFRobot_SHT20
-#include "LC709203F.h"           //https://github.com/EzSBC/ESP32_Bat_Pro/blob/main/LC709203F.zip
-#include "Max44009.h"            //https://github.com/RobTillaart/Max44009
+#include <FirebaseESP32.h>
+#include "ClosedCube_SHT31D.h"
+#include "Adafruit_VEML6075.h"
+#include "DFRobot_SHT20.h"
+#include "LC709203F.h"
+#include "Max44009.h"
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 #include <Wire.h>
 WiFiManager wifiManager;
+#include <WebServer.h>
+#include <ESPmDNS.h>
+#include <HTTPUpdateServer.h>
+#include <WiFiClient.h>
 
+//OTA REMOTE//
+// To inject firmware info into binary file, You have to use following macro according to let
+// OTAdrive to detect binary info automatically
+#define ProductKey "" // Replace with your own APIkey
+#define Version "1.0.1.1"
+#define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
+void update();
+
+//OTA LOCAL//
+WebServer httpServer(80);
+HTTPUpdateServer httpUpdater;
+const char* host = "esp32-webupdate";
+String DEVICE1OTA;
+unsigned long TIMEROTA;
 //--------------------------------------------------------------------------------------//
 
 ///BATTERY OBJECT//
@@ -33,43 +53,25 @@ FirebaseData Weather;
 
 //WIND DIRECTION//
 #define WindDirectionDavis 32 // anemometer
-#define WindDirectionAnemometer 33 // anemometer
+#define WindDirectionMisol 33 // anemometer
 
 ////////////RAIN////////////////
-float mmGoccia; // tipping bucket count in mm
-float mmPioggia = 0.0; // daily rain
-RTC_DATA_ATTR float mmPioggia24H = 0;
-RTC_DATA_ATTR float rainrate = 0; // real-time rainrate
-RTC_DATA_ATTR float rainrateMax = 0; // daily rainrateMax
-byte rainratedetect = 0;
-int rainrateMaxIntensity = 0;
 byte PluvioFlag = 0; // detect interrupt of rain
 byte rainrateI2C = 0;
 byte rainrateMaxI2C = 0;
 byte rainrateMaxI2CIntensity = 0;
 
 ////////////WIND/////////////////
+int WindDirectionDavisValue;
+int WindDirectionMisolValue;
 byte Rotations;
 byte GustRotations;
-unsigned int average = 3000; // sample time for wind speed
-float constant; // formula calculation
-float WindSpeed; // speed km/h
-float GustNow = 0;
-int VaneValue; // raw analog value from wind vane
-int Direction; // translated 0 - 360 direction
-int CalDirection; // converted value with offset applied
-byte AnemometerType;
 
 /////TIMING VARIALABLES//////
 unsigned long timeout; // waiting for WiFi connection
-byte CurrentDay; // current day to reset max and min values
-RTC_DATA_ATTR byte PreviousDay; // previous day to reset max and min values
 bool res; // WiFi Status
 unsigned int sampletime;
-RTC_DATA_ATTR byte INITDATA = 0;
 byte ReadByte = 0;
-RTC_DATA_ATTR byte Alternate = 0;
-RTC_DATA_ATTR boolean justrestart = true;
 byte WiFiReset = 0;
 
 //////////TEMPERATURE///////////
@@ -119,54 +121,37 @@ void InitSensors()
 
 void initData()
 {
-  if (INITDATA == 0)
+  if (Firebase.getInt(Weather, "/Connection/DEVICE1/ResetWiFi"))
   {
-    if (Firebase.getFloat(Weather, "/Rain/Rain24H"))
-    {
-      mmPioggia24H = Weather.floatData();
-    }
-    else
-    {
-      //Serial.println(Weather.errorReason());
-    }
-    if (Firebase.getFloat(Weather, "/Rain/RainRateMax"))
-    {
-      rainrateMax = Weather.floatData();
-    }
-    if (Firebase.getInt(Weather, "Time/PreviousDay"))
-    {
-      PreviousDay = Weather.intData();
-    }
-    if (Firebase.getInt(Weather, "Connection/ResetWiFi"))
-    {
-      WiFiReset = Weather.intData();
-    }
-    if (WiFiReset == 1)
-    {
-      WiFiReset = 0;
-      Firebase.setInt(Weather, "Connection/ResetWiFi", 0);
-      wifiManager.resetSettings();
-      WiFi.mode(WIFI_STA);
-      wifiManager.setConfigPortalTimeout(300);
-      WiFi.begin();
-      timeout = millis();
-      while (WiFi.status() != WL_CONNECTED) {
-        delay(250);
-        //Serial.print(".");
-        if (millis() - timeout > 25000)
-        {
-          res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
+    WiFiReset = Weather.intData();
+  }
+  if (WiFiReset == 1)
+  {
+    WiFiReset = 0;
+    Firebase.setInt(Weather, "/Connection/DEVICE1/ResetWiFi", 0);
+    wifiManager.resetSettings();
+    WiFi.mode(WIFI_STA);
+    wifiManager.setConfigPortalTimeout(300);
+    WiFi.begin();
+    timeout = millis();
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(250);
+      //Serial.print(".");
+      if (millis() - timeout > 10000)
+      {
+        res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
 
-          if (!res) {
-            esp_sleep_enable_timer_wakeup(300 * 1000000LL);
-            esp_deep_sleep_start();
-          }
+        if (!res) {
+          esp_sleep_enable_timer_wakeup(300 * 1000000LL);
+          esp_deep_sleep_start();
         }
       }
     }
-    INITDATA = 1;
   }
-  if (Firebase.getInt(Weather, "Time/SampleTime"))
+  Firebase.deleteNode(Weather, "/Connection/DEVICE1/UpdateHere");
+  Firebase.setString(Weather, "/Connection/DEVICE1/Version", Version);
+
+  if (Firebase.getInt(Weather, "/Time/SampleTime"))
   {
     sampletime = Weather.intData();
   }
@@ -174,71 +159,12 @@ void initData()
   {
     sampletime = 90;
   }
-  if (Firebase.getInt(Weather, "Wind/Anemometer"))
-  {
-    AnemometerType = Weather.intData();
-  }
-  if (Firebase.getFloat(Weather, "/Rain/mmGoccia"))
-  {
-    mmGoccia = Weather.floatData();
-  }
   PluvioFlag = readTiny(I2CSlaveAddress);
   Rotations = readTiny(I2CSlaveAddress);
   GustRotations = readTiny(I2CSlaveAddress);
   rainrateI2C = readTiny(I2CSlaveAddress);
   rainrateMaxI2C = readTiny(I2CSlaveAddress);
   rainrateMaxI2CIntensity = readTiny(I2CSlaveAddress);
-}
-
-void setup()
-{
-  Wire.begin(); //SDA , SCL
-  //Serial.begin(115200);
-  InitSensors();
-  WiFi.mode(WIFI_STA);
-  wifiManager.setConfigPortalTimeout(300);
-  WiFi.begin();
-  timeout = millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(250);
-    //Serial.print(".");
-    if (millis() - timeout > 25000)
-    {
-      res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
-
-      if (!res) {
-        esp_sleep_enable_timer_wakeup(300 * 1000000LL);
-        esp_deep_sleep_start();
-      }
-    }
-  }
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);   // connect to firebase
-  //Firebase.reconnectWiFi(true);
-  Firebase.setMaxRetry(Weather, 2);
-  initData();
-}
-
-
-void loop()
-{
-  readRain ();
-  if (AnemometerType == 1)
-  {
-    readDavisAnemometer ();
-  }
-  else if (AnemometerType == 2)
-  {
-    readAnemometer ();
-  }
-  ReadSensors();
-  WriteData();
-  CheckDay();
-  if (UVDETECT == 0)
-  {
-    uv.setForcedMode(true);
-  }
-  esp_sleep_enable_timer_wakeup(sampletime * 1000000LL);
-  esp_deep_sleep_start();
 }
 
 byte readTiny(int address) {
@@ -289,76 +215,88 @@ byte readTiny(int address) {
   }
 }
 
-//RAIN//
-void readRain () {
-  mmPioggia = (mmPioggia + mmGoccia) * PluvioFlag;
-  mmPioggia24H = mmPioggia24H + mmPioggia;
-  rainrate = (rainrateI2C / 0.3) * mmGoccia;
-  rainrateMaxIntensity = rainrateMaxI2CIntensity * 10;
+void setup()
+{
+  Wire.begin(); //SDA , SCL
+  //Serial.begin(115200);
+  InitSensors();
+  WiFi.mode(WIFI_STA);
+  wifiManager.setConfigPortalTimeout(300);
+  WiFi.begin();
+  timeout = millis();
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    //Serial.print(".");
+    if (millis() - timeout > 25000)
+    {
+      res = wifiManager.autoConnect("LineaMeteoStazioneS", "LaMeteo2005");
 
-  if (rainrateMaxI2C > (rainrateMax / mmGoccia) * 0.3)
-  {
-    rainrateMax = (rainrateMaxI2C / 0.3) * mmGoccia;
-    rainratedetect = 1;
+      if (!res) {
+        esp_sleep_enable_timer_wakeup(300 * 1000000LL);
+        esp_deep_sleep_start();
+      }
+    }
   }
-  if (rainrateMaxIntensity > (rainrateMax / mmGoccia) * 0.3)
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);   // connect to firebase
+  //Firebase.reconnectWiFi(true);
+  Firebase.setMaxRetry(Weather, 2);
+
+  if (Firebase.getString(Weather, "/Connection/DEVICE1/Update"))
   {
-    rainrateMax = (rainrateMaxIntensity / 0.3) * mmGoccia;
-    rainratedetect = 1;
+    DEVICE1OTA = Weather.stringData();
+  }
+  if (DEVICE1OTA == "enable")
+  {
+    Firebase.setString(Weather, "/Connection/DEVICE1/Update", "disable");
+    delay(50);
+    update();
+  }
+
+  if (DEVICE1OTA == "enable")
+  {
+    MDNS.begin(host);
+    if (MDNS.begin("esp32")) {
+      Serial.println("mDNS responder started");
+    }
+    httpUpdater.setup(&httpServer);
+    httpServer.begin();
+
+    MDNS.addService("http", "tcp", 80);
+    Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
+    Firebase.setString(Weather, "/Connection/DEVICE1/Update", "disable");
+    delay(100);
+    Firebase.setString(Weather, "/Connection/DEVICE1/UpdateHere", String(WiFi.localIP().toString() + "/update"));
+    delay(100);
+    TIMEROTA = millis();
+  }
+  else
+  {
+    initData();
   }
 }
 
-//WIND//
-void readDavisAnemometer () {
-  //FORMULA V=P(Rotations)(2.25/T)--->constant
-  constant = 2.25 / (average / 1000);
-  WindSpeed = (Rotations * constant) * 1.60934;
-  GustNow = (GustRotations * constant) * 1.60934;
 
-  VaneValue = analogRead(WindDirectionDavis);
-  Direction = map(VaneValue, 0, 4095, 0, 360);
-  CalDirection = Direction;
-}
-
-//WIND//
-void readAnemometer () {
-  WindSpeed = (Rotations * 2448.0) / average;
-  GustNow = (GustRotations * 2448.0) / average;
-
-
-  VaneValue = analogRead(WindDirectionAnemometer);
-
-  if (VaneValue < 250)
+void loop()
+{
+  if (DEVICE1OTA == "enable")
   {
-    CalDirection = 90;
+    httpServer.handleClient();
+    if (millis() - TIMEROTA > 300000)
+    {
+      ESP.restart();
+    }
   }
-  if (VaneValue > 250 && VaneValue < 600)
+  else
   {
-    CalDirection = 135;
-  }
-  if (VaneValue > 600 && VaneValue < 1100)
-  {
-    CalDirection = 180;
-  }
-  if (VaneValue > 1100 && VaneValue < 2000)
-  {
-    CalDirection = 45;
-  }
-  if (VaneValue > 2000 && VaneValue < 2500 )
-  {
-    CalDirection = 225;
-  }
-  if (VaneValue > 2500 && VaneValue < 3100)
-  {
-    CalDirection = 0;
-  }
-  if (VaneValue > 3100 && VaneValue < 3650)
-  {
-    CalDirection = 315;
-  }
-  if (VaneValue > 3650 && VaneValue < 4095)
-  {
-    CalDirection = 270;
+    ReadSensors();
+    WriteData();
+    if (UVDETECT == 0)
+    {
+      uv.setForcedMode(true);
+    }
+    Firebase.setInt(Weather, "Time/Communication/DataSent", 1);
+    esp_sleep_enable_timer_wakeup(sampletime * 1000000LL);
+    esp_deep_sleep_start();
   }
 }
 
@@ -383,69 +321,55 @@ void ReadSensors()
 
 void WriteData()
 {
-  Alternate++;
-  if (justrestart == true)
-  {
-    justrestart = false;
-    Firebase.setInt(Weather, "Connection/WiFiSignaldb",   WiFi.RSSI());
-    Firebase.setFloat(Weather, "Battery/CellVoltage", gg.cellVoltage_mV() / 1000.0);
-    Firebase.setInt(Weather, "Battery/CellPercentage", gg.cellRemainingPercent10() / 10);
-  }
-  if (Alternate == 5)
-  {
-    justrestart = true;
-    Alternate = 0;
-  }
+  WindDirectionMisolValue = analogRead(WindDirectionMisol);
+  WindDirectionDavisValue = analogRead(WindDirectionDavis);
+  Firebase.setInt(Weather, "Time/Communication/WindDirectionDavis", WindDirectionDavisValue);
+  Firebase.setInt(Weather, "Time/Communication/WindDirectionMisol", WindDirectionMisolValue);
+  Firebase.setInt(Weather, "/Connection/DEVICE1/WiFiSignaldb",   WiFi.RSSI());
+  Firebase.setFloat(Weather, "/Battery/CellVoltage", gg.cellVoltage_mV() / 1000.0);
+  Firebase.setInt(Weather, "/Battery/CellPercentage", gg.cellRemainingPercent10() / 10);
   if (humiditySHT2x > 0)
   {
-    Firebase.setFloat(Weather, "SHT2x/Temperature/Temperature", tempSHT2x);
-    Firebase.setInt(Weather, "SHT2x/Humidity/Humidity", humiditySHT2x);
+    Firebase.setFloat(Weather, "/SHT2x/Temperature/Temperature", tempSHT2x);
+    Firebase.setInt(Weather, "/SHT2x/Humidity/Humidity", humiditySHT2x);
   }
-  Firebase.setFloat(Weather, "SHT3x/Temperature/Temperature", temperatureSHT3x);
-  Firebase.setInt(Weather, "SHT3x/Humidity/Humidity", humiditySHT3x);
-  Firebase.setFloat(Weather, "Rain/RainRate", rainrate);
-  Firebase.setFloat(Weather, "Wind/WindSpeed", WindSpeed);
-  Firebase.setInt(Weather, "Wind/WindDirection", CalDirection);
-  Firebase.setFloat(Weather, "Wind/Gust", GustNow);
+  Firebase.setFloat(Weather, "/SHT3x/Temperature/Temperature", temperatureSHT3x);
+  Firebase.setInt(Weather, "/SHT3x/Humidity/Humidity", humiditySHT3x);
+
   if (UVDETECT == 0)
   {
     UVindex = uv.readUVI();
     if (UVindex < 0)
     {
-      Firebase.setFloat(Weather, "Light/UVindex", 0);
+      Firebase.setFloat(Weather, "/Light/UVindex", 0);
     }
     else
     {
-      Firebase.setFloat(Weather, "Light/UVindex", UVindex);
+      Firebase.setFloat(Weather, "/Light/UVindex", UVindex);
     }
   }
-  Firebase.setFloat(Weather, "Light/Lux", myLux.getLux());
-
-  if (PluvioFlag > 0)
-  {
-    Firebase.setFloat(Weather, "Rain/Rain24H", mmPioggia24H);
-  }
-  if (rainratedetect == 1)
-  {
-    Firebase.setFloat(Weather, "Rain/RainRateMax", rainrateMax);
-    rainratedetect = 0;
-  }
+  Firebase.setFloat(Weather, "/Light/Lux", myLux.getLux());
+  Firebase.setInt(Weather, "/Time/Communication/PluvioFlag", PluvioFlag);
+  Firebase.setInt(Weather, "/Time/Communication/rainrateI2C", rainrateI2C);
+  Firebase.setInt(Weather, "/Time/Communication/rainrateMaxI2C", rainrateMaxI2C);
+  Firebase.setInt(Weather, "/Time/Communication/rainrateMaxI2CIntensity", rainrateMaxI2CIntensity);
+  Firebase.setInt(Weather, "/Time/Communication/Rotations", Rotations);
+  Firebase.setInt(Weather, "/Time/Communication/GustRotations", GustRotations);
 }
 
-void CheckDay()
+String getChipId()
 {
-  if (Firebase.getInt(Weather, "Time/CurrentDay"))
-  {
-    CurrentDay = Weather.intData();
-  }
+  String ChipIdHex = String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
+  ChipIdHex += String((uint32_t)ESP.getEfuseMac(), HEX);
+  return ChipIdHex;
+}
 
-  if (CurrentDay != PreviousDay)
-  {
-    PreviousDay = CurrentDay;
-    mmPioggia24H = 0;
-    rainrateMax = 0;
-    Firebase.setInt(Weather, "Time/PreviousDay",  PreviousDay);
-    Firebase.setFloat(Weather, "Rain/Rain24H", mmPioggia24H);
-    Firebase.setFloat(Weather, "Rain/RainRateMax", rainrateMax);
-  }
+void update()
+{
+  String url = "http://otadrive.com/deviceapi/update?";
+  url += MakeFirmwareInfo(ProductKey, Version);
+  url += "&s=" + getChipId();
+
+  WiFiClient client;
+  httpUpdate.update(client, url, Version);
 }
