@@ -26,7 +26,7 @@ WiFiServer server(80);
 WiFiClient client;
 WiFiManager wifiManager;
 #include <BlynkSimpleEsp8266.h>
-byte Countrestart;
+//byte Countrestart;
 ////////////////////*********EMAIL AND OTA DETAILS************///////////////////////////////////
 //OTAREMOTE//
 #define ProductKey "" // Replace with your own APIkey
@@ -4012,12 +4012,12 @@ void setup()
   }
   Firebase.deleteNode(Weather, "/Connection/DEVICE2/UpdateHere");
   Firebase.setString(Weather, "/Connection/DEVICE2/Version", Version);
-  if (Firebase.getInt(Weather, "/Test/Restart"))
+  /*if (Firebase.getInt(Weather, "/Test/Restart"))
   {
     Countrestart = Weather.intData();
   }
   Countrestart++;
-  Firebase.setInt(Weather, "/Test/Restart", Countrestart);
+  Firebase.setInt(Weather, "/Test/Restart", Countrestart);*/
   SetupData();
   getDataTime();
 
