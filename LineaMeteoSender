@@ -2,12 +2,12 @@
 #include <Arduino.h>
 #include <HTTPUpdate.h>
 #include <WiFi.h>
-#include <FirebaseESP32.h>
-#include "ClosedCube_SHT31D.h"
-#include "Adafruit_VEML6075.h"
-#include "DFRobot_SHT20.h"
-#include "LC709203F.h"
-#include "Max44009.h"
+#include <FirebaseESP32.h>       //https://github.com/mobizt/Firebase-ESP32
+#include "ClosedCube_SHT31D.h"   //https://github.com/closedcube/ClosedCube_SHT31D_Arduino
+#include "Adafruit_VEML6075.h"   //https://github.com/adafruit/Adafruit_VEML6075
+#include "DFRobot_SHT20.h"       //https://github.com/DFRobot/DFRobot_SHT20
+#include "LC709203F.h"           //https://github.com/EzSBC/ESP32_Bat_Pro/blob/main/LC709203F.zip
+#include "Max44009.h"            //https://github.com/RobTillaart/Max44009
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 #include <Wire.h>
 WiFiManager wifiManager;
