@@ -10,24 +10,24 @@
 #include <WiFi.h>              // Built-in
 #include "time.h"              // Built-in
 #include <SPI.h>               // Built-in
-#include <JSON_Decoder.h>
-#include <OpenWeather.h>
-#include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
+#include <JSON_Decoder.h>      //https://github.com/Bodmer/JSON_Decoder
+#include <OpenWeather.h>       //https://github.com/Bodmer/OpenWeather
+#include <WiFiManager.h>       // https://github.com/tzapu/WiFiManager
 #include <math.h>
 #include <String.h>
 WiFiManager wifiManager;
-#include "NTPClient.h"
+#include "NTPClient.h"       //https://github.com/floatAsNeeded/LineaMeteoStazione-Personalised-Weather-Station/blob/main/NTPClient.zip
 #include <WiFiUDP.h>
-#include <FirebaseESP32.h>
-#include <GxEPD2_BW.h>
-#include <GxEPD2_3C.h>
-#include <U8g2_for_Adafruit_GFX.h>
-#include "epaper_fonts.h"
+#include <FirebaseESP32.h>     //https://github.com/mobizt/Firebase-ESP32
+#include <GxEPD2_BW.h>         //https://github.com/ZinggJM/GxEPD2
+#include <GxEPD2_3C.h>         //https://github.com/ZinggJM/GxEPD2
+#include <U8g2_for_Adafruit_GFX.h>   //https://github.com/olikraus/U8g2_for_Adafruit_GFX
+#include "epaper_fonts.h"       //https://github.com/G6EJD/ESP32-e-Paper-Weather-Display
 #include "lang.h"
 #include "common_functions.h"
-#include <Adafruit_Sensor.h>
-#include "Adafruit_BME680.h"
-#include "LC709203F.h"
+#include <Adafruit_Sensor.h>    //https://github.com/adafruit/Adafruit_Sensor
+#include "Adafruit_BME680.h"    //https://github.com/adafruit/Adafruit_BME680
+#include "LC709203F.h"          //https://github.com/EzSBC/ESP32_Bat_Pro/blob/main/LC709203F.zip
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <HTTPUpdateServer.h>
