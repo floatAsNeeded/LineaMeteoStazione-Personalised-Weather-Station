@@ -10,22 +10,22 @@
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
 #include <Arduino.h>
-#include "FirebaseESP8266.h"
+#include "FirebaseESP8266.h"    //https://github.com/mobizt/Firebase-ESP8266
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <ESP_Mail_Client.h>
+#include <ESP_Mail_Client.h>   //https://github.com/mobizt/ESP-Mail-Client
 #include <String.h>
 #include <Wire.h>
-#include "NTPClient.h"
+#include "NTPClient.h"         //https://github.com/floatAsNeeded/LineaMeteoStazione-Personalised-Weather-Station/blob/main/NTPClient.zip
 #include <WiFiUDP.h>
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
-#include <Adafruit_BMP085.h>
+#include <Adafruit_BMP085.h>    //https://github.com/adafruit/Adafruit-BMP085-Library
 #include <math.h>
 Adafruit_BMP085 bmp;
 WiFiServer server(80);
 WiFiClient client;
 WiFiManager wifiManager;
-#include <BlynkSimpleEsp8266.h>
+#include <BlynkSimpleEsp8266.h>  //https://github.com/blynkkk/blynk-library
 //byte Countrestart;
 ////////////////////*********EMAIL AND OTA DETAILS************///////////////////////////////////
 //OTAREMOTE//
