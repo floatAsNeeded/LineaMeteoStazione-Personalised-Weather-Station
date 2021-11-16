@@ -30,7 +30,7 @@ WiFiManager wifiManager;
 
 ////////////////////*********EMAIL AND OTA DETAILS************///////////////////////////////////
 //OTAREMOTE//
-#define ProductKey "bada2b8c-f643-462f-b9b9-837d8cf358ff" // Replace with your own APIkey
+#define ProductKey "" // Replace with your own APIkey
 #define Version "1.0.1.5"
 #define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
 unsigned long TIMER = 0;
@@ -111,10 +111,8 @@ void smtpCallback(SMTP_Status status);
 
 
 ////////////////////*********FIREBASE DETAILS************///////////////////////////////////
-#define FIREBASE_HOST "weather-station-95094.firebaseio.com"                 // the project name address from firebase id
-#define FIREBASE_AUTH "PihHbkRGMXvTPJ7vmJdQmR3wfSvIZPZhJpL86tU0"            // the secret key generated from firebase
-//#define FIREBASE_HOST "trweather-station-default-rtdb.firebaseio.com"                 // the project name address from firebase id
-//#define FIREBASE_AUTH "C0tnTKAzihx9uz7sZ5BiALs8tVeTJBMN9TGK91cR"            // the secret key generated from firebase
+#define FIREBASE_HOST ""                 // the project name address from firebase id
+#define FIREBASE_AUTH ""            // the secret key generated from firebase
 FirebaseData Weather;
 
 
