@@ -27,10 +27,11 @@ WiFiClient client;
 WiFiManager wifiManager;
 #include <BlynkSimpleEsp8266.h>  //https://github.com/blynkkk/blynk-library
 //byte Countrestart;
+
 ////////////////////*********EMAIL AND OTA DETAILS************///////////////////////////////////
 //OTAREMOTE//
-#define ProductKey "" // Replace with your own APIkey
-#define Version "1.0.1.3"
+#define ProductKey "bada2b8c-f643-462f-b9b9-837d8cf358ff" // Replace with your own APIkey
+#define Version "1.0.1.5"
 #define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
 unsigned long TIMER = 0;
 void update();
@@ -110,8 +111,10 @@ void smtpCallback(SMTP_Status status);
 
 
 ////////////////////*********FIREBASE DETAILS************///////////////////////////////////
-#define FIREBASE_HOST ""                 // the project name address from firebase id
-#define FIREBASE_AUTH ""            // the secret key generated from firebase
+#define FIREBASE_HOST "weather-station-95094.firebaseio.com"                 // the project name address from firebase id
+#define FIREBASE_AUTH "PihHbkRGMXvTPJ7vmJdQmR3wfSvIZPZhJpL86tU0"            // the secret key generated from firebase
+//#define FIREBASE_HOST "trweather-station-default-rtdb.firebaseio.com"                 // the project name address from firebase id
+//#define FIREBASE_AUTH "C0tnTKAzihx9uz7sZ5BiALs8tVeTJBMN9TGK91cR"            // the secret key generated from firebase
 FirebaseData Weather;
 
 
@@ -297,15 +300,15 @@ byte PREVIOUSREPORTHOUR;
 void readDavisAnemometer () {
   if (Firebase.getInt(Weather, "/Time/Communication/Rotations"))
   {
-    Rotations = Weather.intData();
+    Rotations = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/GustRotations"))
   {
-    GustRotations = Weather.intData();
+    GustRotations = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/WindDirectionDavis"))
   {
-    WindDirectionDavis = Weather.intData();
+    WindDirectionDavis = Weather.to<int>();
   }
   //FORMULA V=P(Rotations)(2.25/T)--->constant
   constant = 2.25 / (average / 1000);
@@ -322,16 +325,16 @@ void readAnemometer () {
 
   if (Firebase.getInt(Weather, "/Time/Communication/Rotations"))
   {
-    Rotations = Weather.intData();
+    Rotations = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/GustRotations"))
   {
-    GustRotations = Weather.intData();
+    GustRotations = Weather.to<int>();
   }
 
   if (Firebase.getInt(Weather, "/Time/Communication/WindDirectionMisol"))
   {
-    WindDirectionMisol = Weather.intData();
+    WindDirectionMisol = Weather.to<int>();
   }
 
 
@@ -386,19 +389,19 @@ void writeWind()
 void readRain () {
   if (Firebase.getInt(Weather, "/Time/Communication/PluvioFlag"))
   {
-    PluvioFlag = Weather.intData();
+    PluvioFlag = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/rainrateI2C"))
   {
-    rainrateI2C = Weather.intData();
+    rainrateI2C = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/rainrateMaxI2C"))
   {
-    rainrateMaxI2C = Weather.intData();
+    rainrateMaxI2C = Weather.to<int>();
   }
   if (Firebase.getInt(Weather, "/Time/Communication/rainrateMaxI2CIntensity"))
   {
-    rainrateMaxI2CIntensity = Weather.intData();
+    rainrateMaxI2CIntensity = Weather.to<int>();
   }
 
   mmPioggiaLast = (mmPioggia + mmGoccia) * PluvioFlag;
@@ -436,7 +439,7 @@ void readPressure()
 {
   if (Firebase.getInt(Weather, "/Pressure/Calibration"))
   {
-    CALIBRATION = Weather.intData();
+    CALIBRATION = Weather.to<int>();
   }
   float pressure = bmp.readPressure() + CALIBRATION;
   pressurehpa = pressure / 100;
@@ -451,7 +454,7 @@ void CheckTimezone()
 {
   if (Firebase.getInt(Weather, "/Time/TIMEZONE"))
   {
-    TIMEZONE = Weather.intData();
+    TIMEZONE = Weather.to<int>();
   }
 }
 
@@ -459,7 +462,7 @@ void checkforUpdates()
 {
   if (Firebase.getString(Weather, "/Connection/DEVICE2/Update"))
   {
-    DEVICE2OTA = Weather.stringData();
+    DEVICE2OTA = Weather.to<const char *>();
   }
 }
 
@@ -467,7 +470,7 @@ void checkBatteryVoltage()
 {
   if (Firebase.getFloat(Weather, "/Battery/CellVoltage"))
   {
-    BatteryVoltage = Weather.floatData();
+    BatteryVoltage = Weather.to<float>();
   }
 }
 
@@ -475,17 +478,17 @@ void readTemperatureHumidity()
 {
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/Offset"))
   {
-    OffsetTemp = Weather.floatData();
+    OffsetTemp = Weather.to<float>();
   }
 
   if (Firebase.getInt(Weather, "/SHT3x/Humidity/Offset"))
   {
-    OffsetHum = Weather.intData();
+    OffsetHum = Weather.to<int>();
   }
 
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/Temperature"))
   {
-    temp = Weather.floatData() + OffsetTemp;
+    temp = Weather.to<float>() + OffsetTemp;
     if (OffsetTemp != 0)
     {
       Firebase.setFloat(Weather, "/SHT3x/Temperature/TemperatureAdjusted", temp);
@@ -498,7 +501,7 @@ void readTemperatureHumidity()
 
   if (Firebase.getInt(Weather, "/SHT3x/Humidity/Humidity"))
   {
-    humidity = Weather.intData() + OffsetHum;
+    humidity = Weather.to<int>() + OffsetHum;
     if (OffsetHum != 0)
     {
       Firebase.setInt(Weather, "/SHT3x/Humidity/HumidityAdjusted", humidity);
@@ -511,17 +514,17 @@ void readTemperatureHumidity()
 
   if (Firebase.getFloat(Weather, "/SHT2x/Temperature/Offset"))
   {
-    OffsetTemp = Weather.floatData();
+    OffsetTemp = Weather.to<float>();
   }
 
   if (Firebase.getInt(Weather, "/SHT2x/Humidity/Offset"))
   {
-    OffsetHum = Weather.intData();
+    OffsetHum = Weather.to<int>();
   }
 
   if (Firebase.getFloat(Weather, "/SHT2x/Temperature/Temperature"))
   {
-    tempSHT2x = Weather.floatData() + OffsetTemp;
+    tempSHT2x = Weather.to<float>() + OffsetTemp;
     if (OffsetTemp != 0)
     {
       Firebase.setFloat(Weather, "/SHT2x/Temperature/TemperatureAdjusted", tempSHT2x);
@@ -534,7 +537,7 @@ void readTemperatureHumidity()
 
   if (Firebase.getInt(Weather, "/SHT2x/Humidity/Humidity"))
   {
-    humiditySHT2x = Weather.intData() + OffsetHum;
+    humiditySHT2x = Weather.to<int>() + OffsetHum;
     if (OffsetHum != 0)
     {
       Firebase.setInt(Weather, "/SHT2x/Humidity/HumidityAdjusted", humiditySHT2x);
@@ -550,12 +553,12 @@ void readInsideValues()
 {
   if (Firebase.getFloat(Weather, "/Inside/Temperature"))
   {
-    tempinside = Weather.floatData();
+    tempinside = Weather.to<float>();
   }
 
   if (Firebase.getInt(Weather, "/Inside/Humidity"))
   {
-    humidityinside = Weather.intData();
+    humidityinside = Weather.to<int>();
   }
 }
 
@@ -563,17 +566,17 @@ void readLight()
 {
   if (Firebase.getFloat(Weather, "/Light/CalibrationUV"))
   {
-    CalibrationUV = Weather.floatData();
+    CalibrationUV = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Light/CalibrationRadiation"))
   {
-    CalibrationRadiation = Weather.floatData();
+    CalibrationRadiation = Weather.to<float>();
   }
 
 
   if (Firebase.getFloat(Weather, "/Light/UVindex"))
   {
-    UVindex = Weather.floatData() * CalibrationUV;
+    UVindex = Weather.to<float>() * CalibrationUV;
     if (CalibrationUV != 1)
     {
       Firebase.setFloat(Weather, "/Light/UVindexAdjusted", UVindex);
@@ -586,7 +589,7 @@ void readLight()
 
   if (Firebase.getFloat(Weather, "/Light/Lux"))
   {
-    Lux = Weather.floatData();
+    Lux = Weather.to<float>();
   }
 }
 
@@ -594,7 +597,7 @@ void readAirQuality()
 {
   if (Firebase.getInt(Weather, "/Inside/AirQuality"))
   {
-    AIRQUALITY = Weather.intData();
+    AIRQUALITY = Weather.to<int>();
   }
 }
 
@@ -602,7 +605,7 @@ void readEmailLanguage()
 {
   if (Firebase.getString(Weather, "/Services/EmailAlert/Language"))
   {
-    Language = Weather.stringData();
+    Language = Weather.to<const char *>();
   }
   if (Language == "it")
   {
@@ -657,15 +660,15 @@ void readData()
     timeClient.update();
     if (Firebase.getInt(Weather, "/Time/Communication/DataSent"))
     {
-      DATASENT = Weather.intData();
+      DATASENT = Weather.to<int>();
     }
+    checkforUpdates();
   }
   if (DATASENT == 1)
   {
     Firebase.setInt(Weather, "/Time/Communication/DataSent", 0);
     DATASENT = 0;
     readvalues = true;
-    checkforUpdates();
     if (AnemometerType == 1)
     {
       readDavisAnemometer ();
@@ -755,7 +758,7 @@ void maxminvalues()
 
   if (Firebase.getInt(Weather, "/Wind/Offset"))
   {
-    Offset = Weather.intData();
+    Offset = Weather.to<int>();
   }
 
   if (temp > maxTemp)
@@ -836,7 +839,7 @@ void BATTERYMANAGEMENT()
   {
     if (Firebase.getString(Weather, "/Battery/AutomaticBatteryManagement"))
     {
-      AutomaticBatteryManagement = Weather.stringData();
+      AutomaticBatteryManagement = Weather.to<const char *>();
     }
     if (BatteryVoltage >= 4.1)
     {
@@ -871,7 +874,7 @@ void BATTERYMANAGEMENT()
   {
     if (Firebase.getString(Weather, "/Battery/AutomaticBatteryManagement"))
     {
-      AutomaticBatteryManagement = Weather.stringData();
+      AutomaticBatteryManagement = Weather.to<const char *>();
     }
   }
   if (BatteryVoltage >= 4.1)
@@ -899,18 +902,18 @@ void Email()
     {
       if (Firebase.getInt(Weather, "/Services/EmailAlert/ReportHour"))
       {
-        REPORTHOUR = Weather.intData();
+        REPORTHOUR = Weather.to<int>();
       }
       if (Firebase.getString(Weather, "/Services/EmailAlert/EmailReport"))
       {
-        EmailONOFF = Weather.stringData();
+        EmailONOFF = Weather.to<const char *>();
       }
     }
     else
     {
       if (Firebase.getString(Weather, "/Services/EmailAlert/EmailReport"))
       {
-        EmailONOFF = Weather.stringData();
+        EmailONOFF = Weather.to<const char *>();
       }
     }
 
@@ -918,54 +921,54 @@ void Email()
     {
       if (Firebase.getString(Weather, "/Services/EmailAlert/EmailAlert"))
       {
-        EmailAlertONOFF = Weather.stringData();
+        EmailAlertONOFF = Weather.to<const char *>();
       }
       if (Firebase.getString(Weather, "/Services/EmailAlert/SHT3x/Temperature/Enable"))
       {
-        Alert3ONOFF = Weather.stringData();
+        Alert3ONOFF = Weather.to<const char *>();
       }
       if (Firebase.getString(Weather, "/Services/EmailAlert/SHT2x/Temperature/Enable"))
       {
-        Alert4ONOFF = Weather.stringData();
+        Alert4ONOFF = Weather.to<const char *>();
       }
 
       if (Firebase.getString(Weather, "/Services/EmailAlert/SHT3x/Humidity/Enable"))
       {
-        Alert5ONOFF = Weather.stringData();
+        Alert5ONOFF = Weather.to<const char *>();
       }
 
       if (Firebase.getString(Weather, "/Services/EmailAlert/SHT2x/Humidity/Enable"))
       {
-        Alert6ONOFF = Weather.stringData();
+        Alert6ONOFF = Weather.to<const char *>();
       }
 
       if (Firebase.getString(Weather, "/Services/EmailAlert/Gust/Enable"))
       {
-        Alert7ONOFF = Weather.stringData();
+        Alert7ONOFF = Weather.to<const char *>();
       }
 
       if (Firebase.getString(Weather, "/Services/EmailAlert/Rain/Enable"))
       {
-        Alert8ONOFF = Weather.stringData();
+        Alert8ONOFF = Weather.to<const char *>();
       }
       if (Firebase.getString(Weather, "/Services/EmailAlert/UV/Enable"))
       {
-        Alert9ONOFF = Weather.stringData();
+        Alert9ONOFF = Weather.to<const char *>();
       }
       if (Firebase.getString(Weather, "/Services/EmailAlert/HeatIndex/Enable"))
       {
-        Alert10ONOFF = Weather.stringData();
+        Alert10ONOFF = Weather.to<const char *>();
       }
 
       if (Alert3ONOFF == "ON")
       {
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/SHT3x/Temperature/TemperatureMax"))
         {
-          TEMPERATUREMAXALERT = Weather.floatData();
+          TEMPERATUREMAXALERT = Weather.to<float>();
         }
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/SHT3x/Temperature/TemperatureMin"))
         {
-          TEMPERATUREMINALERT = Weather.floatData();
+          TEMPERATUREMINALERT = Weather.to<float>();
         }
       }
 
@@ -973,11 +976,11 @@ void Email()
       {
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/SHT2x/Temperature/TemperatureMax"))
         {
-          TEMPERATUREMAXALERTSECOND = Weather.floatData();
+          TEMPERATUREMAXALERTSECOND = Weather.to<float>();
         }
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/SHT2x/Temperature/TemperatureMin"))
         {
-          TEMPERATUREMINALERTSECOND = Weather.floatData();
+          TEMPERATUREMINALERTSECOND = Weather.to<float>();
         }
       }
 
@@ -985,11 +988,11 @@ void Email()
       {
         if (Firebase.getInt(Weather, "/Services/EmailAlert/SHT3x/Humidity/HumidityMax"))
         {
-          HUMIDITYMAXALERT = Weather.intData();
+          HUMIDITYMAXALERT = Weather.to<int>();
         }
         if (Firebase.getInt(Weather, "/Services/EmailAlert/SHT3x/Humidity/HumidityMin"))
         {
-          HUMIDITYMINALERT = Weather.intData();
+          HUMIDITYMINALERT = Weather.to<int>();
         }
       }
 
@@ -997,11 +1000,11 @@ void Email()
       {
         if (Firebase.getInt(Weather, "/Services/EmailAlert/SHT2x/Humidity/HumidityMax"))
         {
-          HUMIDITYMAXALERTSECOND = Weather.intData();
+          HUMIDITYMAXALERTSECOND = Weather.to<int>();
         }
         if (Firebase.getInt(Weather, "/Services/EmailAlert/SHT2x/Humidity/HumidityMin"))
         {
-          HUMIDITYMINALERTSECOND = Weather.intData();
+          HUMIDITYMINALERTSECOND = Weather.to<int>();
         }
       }
 
@@ -1009,7 +1012,7 @@ void Email()
       {
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/Gust/Gust"))
         {
-          GUSTALERT = Weather.floatData();
+          GUSTALERT = Weather.to<float>();
         }
 
       }
@@ -1018,12 +1021,12 @@ void Email()
       {
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/Rain/Rain"))
         {
-          RAINALERT = Weather.floatData();
+          RAINALERT = Weather.to<float>();
         }
 
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/Rain/RainIntensity"))
         {
-          RAININTENSITYALERT = Weather.floatData();
+          RAININTENSITYALERT = Weather.to<float>();
         }
       }
 
@@ -1031,7 +1034,7 @@ void Email()
       {
         if (Firebase.getInt(Weather, "/Services/EmailAlert/UV/UV"))
         {
-          UVALERT = Weather.intData();
+          UVALERT = Weather.to<int>();
         }
       }
 
@@ -1039,7 +1042,7 @@ void Email()
       {
         if (Firebase.getFloat(Weather, "/Services/EmailAlert/HeatIndex/HeatIndex"))
         {
-          HEATINDEXALERT = Weather.floatData();
+          HEATINDEXALERT = Weather.to<float>();
         }
       }
       NewAlertLimit = true;
@@ -1048,7 +1051,7 @@ void Email()
     {
       if (Firebase.getString(Weather, "/Services/EmailAlert/EmailAlert"))
       {
-        EmailAlertONOFF = Weather.stringData();
+        EmailAlertONOFF = Weather.to<const char *>();
       }
     }
     if (HOURS != PREVIOUSREPORTHOUR)
@@ -3685,7 +3688,7 @@ void SetupData()
 
   if (Firebase.getInt(Weather, "/Time/RESETDATA"))
   {
-    RESETDATA = Weather.intData();
+    RESETDATA = Weather.to<int>();
   }
   else
   {
@@ -3782,173 +3785,173 @@ void getDataTime()
 {
   if (Firebase.getInt(Weather, "/Wind/Anemometer"))
   {
-    AnemometerType = Weather.intData();
+    AnemometerType = Weather.to<int>();
   }
 
   if (Firebase.getFloat(Weather, "/Rain/mmGoccia"))
   {
-    mmGoccia = Weather.floatData();
+    mmGoccia = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Rain/Rain24H"))
   {
-    mmPioggia = Weather.floatData();
+    mmPioggia = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Rain/RainRateMax"))
   {
-    rainrateMax = Weather.floatData();
+    rainrateMax = Weather.to<float>();
   }
   if (Firebase.getInt(Weather, "/Time/TIMEZONE"))
   {
-    TIMEZONE = Weather.intData();
+    TIMEZONE = Weather.to<int>();
   }
 
   if (Firebase.getInt(Weather, "/Time/CurrentDay"))
   {
-    CurrentDay = Weather.intData();
+    CurrentDay = Weather.to<int>();
   }
 
   if (Firebase.getInt(Weather, "/SHT3x/Humidity/HumidityMax"))
   {
-    maxHumidity = Weather.intData();
+    maxHumidity = Weather.to<int>();
   }
 
   if (Firebase.getInt(Weather, "/SHT3x/Humidity/HumidityMin"))
   {
-    minHumidity = Weather.intData();
+    minHumidity = Weather.to<int>();
   }
 
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/TemperatureMax"))
   {
-    maxTemp = Weather.floatData();
+    maxTemp = Weather.to<float>();
   }
 
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/TemperatureMin"))
   {
-    minTemp = Weather.floatData();
+    minTemp = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Wind/GustMax"))
   {
-    GustMax = Weather.floatData();
+    GustMax = Weather.to<float>();
   }
   if (Firebase.getInt(Weather, "/Services/Wunderground/TimeUpload"))
   {
-    UPLOADWUNDERGROUND = Weather.intData() * 1000;
+    UPLOADWUNDERGROUND = Weather.to<int>() * 1000;
   }
   if (Firebase.getString(Weather, "/Services/PWS/ID"))
   {
-    IDPWS = Weather.stringData();
+    IDPWS = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/PWS/API"))
   {
-    APIPWS = Weather.stringData();
+    APIPWS = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/Wunderground/ID"))
   {
-    ID = Weather.stringData();
+    ID = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/Wunderground/Key"))
   {
-    Key = Weather.stringData();
+    Key = Weather.to<const char *>();
   }
   if (Firebase.getInt(Weather, "/Services/WeatherCloud/TimeUpload"))
   {
-    UPLOADWEATHERCLOUD = Weather.intData() * 1000;
+    UPLOADWEATHERCLOUD = Weather.to<int>() * 1000;
   }
   if (Firebase.getString(Weather, "/Services/WeatherCloud/ID"))
   {
-    Weathercloud_ID = Weather.stringData();
+    Weathercloud_ID = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/WeatherCloud/Key"))
   {
-    Weathercloud_KEY = Weather.stringData();
+    Weathercloud_KEY = Weather.to<const char *>();
   }
 
   if (Firebase.getInt(Weather, "/Services/ThingSpeak/TimeUpload"))
   {
-    UPLOADTHINGSPEAK = Weather.intData() * 1000;
+    UPLOADTHINGSPEAK = Weather.to<int>() * 1000;
   }
 
   if (Firebase.getString(Weather, "/Services/ThingSpeak/myWriteAPIKey"))
   {
-    myWriteAPIKey = Weather.stringData();
+    myWriteAPIKey = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/LineaMeteo/Latitude"))
   {
-    Latitude = Weather.stringData();
+    Latitude = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/LineaMeteo/Longitude"))
   {
-    Longitude = Weather.stringData();
+    Longitude = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/LineaMeteo/City"))
   {
-    City = Weather.stringData();
+    City = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/LineaMeteo/Altitude"))
   {
-    Altitude = Weather.stringData();
+    Altitude = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/LineaMeteo/WebServerString"))
   {
-    StringLineaMeteo = Weather.stringData();
+    StringLineaMeteo = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/EmailAlert/EmailAccountForSMPT"))
   {
-    AUTHOR_EMAIL = Weather.stringData();
+    AUTHOR_EMAIL = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/EmailAlert/Password"))
   {
-    AUTHORPASSWORD = Weather.stringData();
+    AUTHORPASSWORD = Weather.to<const char *>();
   }
 
   if (Firebase.getString(Weather, "/Services/EmailAlert/EmailAccountForNotification"))
   {
-    EMAILACCOUNT = Weather.stringData();
+    EMAILACCOUNT = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/EmailAlert/Language"))
   {
-    Language = Weather.stringData();
+    Language = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/EmailAlert/EmailReport"))
   {
-    EmailONOFF = Weather.stringData();
+    EmailONOFF = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/EmailAlert/EmailAlert"))
   {
-    EmailAlertONOFF = Weather.stringData();
+    EmailAlertONOFF = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Battery/AutomaticBatteryManagement"))
   {
-    AutomaticBatteryManagement = Weather.stringData();
+    AutomaticBatteryManagement = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/Blynk/API"))
   {
-    APIBLYNK = Weather.stringData();
+    APIBLYNK = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/Blynk/Server"))
   {
-    ServerBlynk = Weather.stringData();
+    ServerBlynk = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/Blynk/Enable"))
   {
-    BLYNKONOFF = Weather.stringData();
+    BLYNKONOFF = Weather.to<const char *>();
   }
   if (Firebase.getInt(Weather, "/Services/Blynk/TimeUpload"))
   {
-    UPLOADBLYNK = Weather.intData() * 1000;
+    UPLOADBLYNK = Weather.to<int>() * 1000;
   }
   if (Firebase.getInt(Weather, "/Services/Blynk/Port"))
   {
-    Port = Weather.intData();
+    Port = Weather.to<int>();
   }
 }
 
@@ -3986,7 +3989,7 @@ void setup()
   //char auth[] = APIBLYNK.c_str();WiFi.SSID().c_str()
   if (Firebase.getInt(Weather, "/Connection/DEVICE2/ResetWiFi"))
   {
-    WiFiReset = Weather.intData();
+    WiFiReset = Weather.to<int>();
   }
   if (WiFiReset == 1)
   {
@@ -4013,11 +4016,11 @@ void setup()
   Firebase.deleteNode(Weather, "/Connection/DEVICE2/UpdateHere");
   Firebase.setString(Weather, "/Connection/DEVICE2/Version", Version);
   /*if (Firebase.getInt(Weather, "/Test/Restart"))
-  {
-    Countrestart = Weather.intData();
-  }
-  Countrestart++;
-  Firebase.setInt(Weather, "/Test/Restart", Countrestart);*/
+    {
+    Countrestart = Weather.to<int>();
+    }
+    Countrestart++;
+    Firebase.setInt(Weather, "/Test/Restart", Countrestart);*/
   SetupData();
   getDataTime();
 
@@ -4035,7 +4038,7 @@ void setup()
 
   if (Firebase.getString(Weather, "/Connection/DEVICE2/Update"))
   {
-    DEVICE2OTA = Weather.stringData();
+    DEVICE2OTA = Weather.to<const char *>();
   }
 
   if (DEVICE2OTA == "enable")
