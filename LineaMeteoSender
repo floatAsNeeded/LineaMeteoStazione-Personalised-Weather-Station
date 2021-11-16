@@ -20,7 +20,7 @@ WiFiManager wifiManager;
 // To inject firmware info into binary file, You have to use following macro according to let
 // OTAdrive to detect binary info automatically
 #define ProductKey "" // Replace with your own APIkey
-#define Version "1.0.1.1"
+#define Version "1.0.1.2"
 #define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
 void update();
 
@@ -123,7 +123,7 @@ void initData()
 {
   if (Firebase.getInt(Weather, "/Connection/DEVICE1/ResetWiFi"))
   {
-    WiFiReset = Weather.intData();
+    WiFiReset = Weather.to<int>();
   }
   if (WiFiReset == 1)
   {
@@ -153,7 +153,7 @@ void initData()
 
   if (Firebase.getInt(Weather, "/Time/SampleTime"))
   {
-    sampletime = Weather.intData();
+    sampletime = Weather.to<int>();
   }
   if (sampletime == 0)
   {
@@ -243,7 +243,7 @@ void setup()
 
   if (Firebase.getString(Weather, "/Connection/DEVICE1/Update"))
   {
-    DEVICE1OTA = Weather.stringData();
+    DEVICE1OTA = Weather.to<const char *>();
   }
   if (DEVICE1OTA == "enable")
   {
