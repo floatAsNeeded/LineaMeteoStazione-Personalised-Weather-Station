@@ -43,7 +43,7 @@ byte PERCENTAGEOUT;
 // To inject firmware info into binary file, You have to use following macro according to let
 // OTAdrive to detect binary info automatically
 #define ProductKey "" // Replace with your own APIkey
-#define Version "1.0.0.4"
+#define Version "1.0.0.5"
 #define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
 void update();
 
@@ -258,7 +258,7 @@ void getDataTime()
 {
   if (Firebase.getInt(Weather, "/Time/TIMEZONE"))
   {
-    TIMEZONE = Weather.intData();
+    TIMEZONE = Weather.to<int>();
   }
   else
   {
@@ -266,43 +266,43 @@ void getDataTime()
   }
   /*if (Firebase.getInt(Weather, "/Pressure/Calibration"))
     {
-    CALIBRATION = Weather.intData();
+    CALIBRATION = Weather.to<int>();
     }*/
   if (Firebase.getString(Weather, "/Services/OpenWeather/API"))
   {
-    api_key = Weather.stringData();
+    api_key = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Display/Language"))
   {
-    language = Weather.stringData();
+    language = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/OpenWeather/Latitude"))
   {
-    latitude = Weather.stringData();
+    latitude = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/OpenWeather/Longitude"))
   {
-    longitude = Weather.stringData();
+    longitude = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Services/OpenWeather/Hemisphere"))
   {
-    Hemisphere = Weather.stringData();
+    Hemisphere = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Display/Units/Temperature"))
   {
-    unitsTemperature = Weather.stringData();
+    unitsTemperature = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Display/Units/Wind"))
   {
-    unitsWind = Weather.stringData();
+    unitsWind = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Display/Units/Rain"))
   {
-    unitsRain = Weather.stringData();
+    unitsRain = Weather.to<const char *>();
   }
   if (Firebase.getString(Weather, "/Display/Units/Pressure"))
   {
-    unitsPressure = Weather.stringData();
+    unitsPressure = Weather.to<const char *>();
   }
 }
 
@@ -468,11 +468,11 @@ void getValues()
   //config.rtdb.data_type_stricted = true;
   if (Firebase.getFloat(Weather, "/Battery/CellVoltage"))
   {
-    VOLTAGEOUT = Weather.floatData();
+    VOLTAGEOUT = Weather.to<float>();
   }
   if (Firebase.getInt(Weather, "/Battery/CellPercentage"))
   {
-    PERCENTAGEOUT = Weather.intData();
+    PERCENTAGEOUT = Weather.to<int>();
   }
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/Offset"))
   {
@@ -480,11 +480,11 @@ void getValues()
   }
   if (Firebase.getInt(Weather, "/Wind/Offset"))
   {
-    Offset = Weather.intData();
+    Offset = Weather.to<int>();
   }
   if (Firebase.getString(Weather, "/Display/FastRefresh"))
   {
-    FASTREFRESH = Weather.stringData();
+    FASTREFRESH = Weather.to<const char *>();
   }
   //config.rtdb.data_type_stricted = true;
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/Temperature"))
@@ -499,22 +499,22 @@ void getValues()
 
   if (Firebase.getInt(Weather, "/SHT3x/Humidity/Humidity"))
   {
-    humidity = Weather.intData();
+    humidity = Weather.to<int>();
   }
 
   if (Firebase.getFloat(Weather, "/Rain/RainRate"))
   {
-    rainrate = Weather.floatData();
+    rainrate = Weather.to<float>();
   }
 
   if (Firebase.getFloat(Weather, "/Wind/Gust"))
   {
-    WindSpeed = Weather.floatData();
+    WindSpeed = Weather.to<float>();
   }
 
   if (Firebase.getInt(Weather, "/Wind/WindDirection"))
   {
-    CalDirection = Weather.intData() + Offset;
+    CalDirection = Weather.to<int>() + Offset;
   }
   if (CalDirection > 360) {
     CalDirection = CalDirection - 360;
@@ -524,19 +524,19 @@ void getValues()
   }
   if (Firebase.getFloat(Weather, "/Pressure/Pressure"))
   {
-    pressurehpa = Weather.floatData();
+    pressurehpa = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Light/CalibrationUV"))
   {
-    CalibrationUV = Weather.floatData();
+    CalibrationUV = Weather.to<float>();
   }
   if (Firebase.getFloat(Weather, "/Light/UVindex"))
   {
-    UVindex = Weather.floatData()* CalibrationUV;
+    UVindex = Weather.to<float>() * CalibrationUV;
   }
   if (Firebase.getFloat(Weather, "/Light/SolarRadiation"))
   {
-    SolarRadiation = Weather.floatData();
+    SolarRadiation = Weather.to<float>();
   }
   config.rtdb.data_type_stricted = false;
   bme.performReading();
@@ -590,27 +590,27 @@ void maxminvalues()
 {
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/TemperatureMax"))
   {
-    maxTemp = (Weather.floatData() * constantF) + constantF32;
+    maxTemp = (Weather.to<float>() * constantF) + constantF32;
   }
 
   if (Firebase.getFloat(Weather, "/SHT3x/Temperature/TemperatureMin"))
   {
-    minTemp = (Weather.floatData() * constantF) + constantF32;
+    minTemp = (Weather.to<float>() * constantF) + constantF32;
   }
 
   if (Firebase.getFloat(Weather, "/Rain/Rain24H"))
   {
-    mmPioggia = Weather.floatData();
+    mmPioggia = Weather.to<float>();
   }
 
   if (Firebase.getFloat(Weather, "/Wind/GustMax"))
   {
-    Gust = Weather.floatData();
+    Gust = Weather.to<float>();
   }
 
   if (Firebase.getFloat(Weather, "/Rain/RainRateMax"))
   {
-    rainrateMax = Weather.floatData();
+    rainrateMax = Weather.to<float>();
   }
 }
 
@@ -1593,7 +1593,7 @@ void setup() {
 
   if (Firebase.getInt(Weather, "/Connection/DEVICE3/ResetWiFi"))
   {
-    WiFiReset = Weather.intData();
+    WiFiReset = Weather.to<int>();
   }
   if (WiFiReset == 1)
   {
@@ -1636,7 +1636,7 @@ void setup() {
 
   if (Firebase.getString(Weather, "/Connection/DEVICE3/Update"))
   {
-    DEVICE3OTA = Weather.stringData();
+    DEVICE3OTA = Weather.to<const char *>();
   }
 
   if (DEVICE3OTA == "enable")
