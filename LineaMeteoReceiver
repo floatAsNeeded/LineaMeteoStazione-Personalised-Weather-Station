@@ -31,7 +31,7 @@ WiFiManager wifiManager;
 ////////////////////*********EMAIL AND OTA DETAILS************///////////////////////////////////
 //OTAREMOTE//
 #define ProductKey "" // Replace with your own APIkey
-#define Version "1.0.1.5"
+#define Version "1.0.1.6"
 #define MakeFirmwareInfo(k, v) "&_FirmwareInfo&k=" k "&v=" v "&FirmwareInfo_&"
 unsigned long TIMER = 0;
 void update();
@@ -402,7 +402,7 @@ void readRain () {
     rainrateMaxI2CIntensity = Weather.to<int>();
   }
 
-  mmPioggiaLast = (mmPioggia + mmGoccia) * PluvioFlag;
+  mmPioggiaLast = (mmPioggiaLast + mmGoccia) * PluvioFlag;
   mmPioggia = mmPioggiaLast + mmPioggia;
   rainrate = (rainrateI2C / 0.3) * mmGoccia;
   rainrateMaxIntensity = rainrateMaxI2CIntensity * 10;
@@ -417,6 +417,7 @@ void readRain () {
     rainrateMax = (rainrateMaxIntensity / 0.3) * mmGoccia;
     rainratedetect = 1;
   }
+  mmPioggiaLast = 0;
 }
 
 void writeRain()
