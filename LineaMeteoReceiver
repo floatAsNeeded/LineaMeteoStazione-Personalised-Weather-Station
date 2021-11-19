@@ -3454,8 +3454,8 @@ void THINGSPEAK()
       http.end();*/
     WiFiClient client;
     if (client.connect(serverThingSpeak, 80)) { // use ip 184.106.153.149 or api.thingspeak.com
-      //Serial.print("connected to ");
-      //Serial.println(client.remoteIP());
+      Serial.print("connected to ");
+      Serial.println(client.remoteIP());
 
       String postStr = myWriteAPIKey;
       postStr += "&field1=";
@@ -3580,7 +3580,7 @@ void push_to_weathercloud()
   //Serial.println("Initializing data push to Weathercloud.");
 
   if (!client.connect(Weathercloud, httpPort)) {
-    //Serial.println("Connecting to Weatherloud failed.\n");
+    Serial.println("Connecting to Weatherloud failed.\n");
     return;
   }
   client.print("GET /set");
@@ -3609,20 +3609,20 @@ void push_to_weathercloud()
   client.println("Host: api.weathercloud.net");
   client.println("Connection: close");
   client.println();
-  //Serial.println("Data pushed to Weathercloud sucessfuly.\n");;
+  Serial.println("Data pushed to Weathercloud sucessfuly.\n");;
 }
 
 void wunderground()
 {
-  //Serial.print("Connecting to ");
-  //Serial.println(serverWU);
+  Serial.print("Connecting to ");
+  Serial.println(serverWU);
   WiFiClient client;
   if (client.connect(serverWU, 80)) {
-    //Serial.print("connected to ");
-    //Serial.println(client.remoteIP());
+    Serial.print("connected to ");
+    Serial.println(client.remoteIP());
     delay(100);
   } else {
-    //Serial.println("connection failed");
+    Serial.println("connection failed");
   }
   client.print(WEBPAGE);
   client.print("ID=");
