@@ -737,14 +737,6 @@ void writeData()
     maxminvalues();
     EMAILNOTIFICATION();
     
-    if (StringLineaMeteo == "enable")
-    {
-      lineameteo();
-    }
-    if (DEVICE2OTA == "enable")
-    {
-      ESP.restart();
-    }
     if (millis() - previousWEATHERCLOUD >= UPLOADWEATHERCLOUD)
     {
       previousWEATHERCLOUD = millis();
@@ -4124,6 +4116,14 @@ void loop()
     writeData();
     gettime();
     Email();
+    if (DEVICE2OTA == "enable")
+    {
+      ESP.restart();
+    }
+    if (StringLineaMeteo == "enable")
+    {
+      lineameteo();
+    }
   }
 }
 
