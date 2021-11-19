@@ -736,6 +736,40 @@ void writeData()
     writeWind();
     maxminvalues();
     EMAILNOTIFICATION();
+    
+    if (StringLineaMeteo == "enable")
+    {
+      lineameteo();
+    }
+    if (DEVICE2OTA == "enable")
+    {
+      ESP.restart();
+    }
+    if (millis() - previousWEATHERCLOUD >= UPLOADWEATHERCLOUD)
+    {
+      previousWEATHERCLOUD = millis();
+      push_to_weathercloud();
+      // pws();
+    }
+    if (millis() - previousWUNDERGROUND >= UPLOADWUNDERGROUND)
+    {
+      previousWUNDERGROUND = millis();
+      wunderground();
+    }
+    if (BLYNKONOFF == "ON")
+    {
+      if (millis() - previousBLYNK >= UPLOADBLYNK)
+      {
+        previousBLYNK = millis();
+        BlynkFunction();
+      }
+    }
+    if (millis() - previousPWS >= UPLOADPWS)
+    {
+      previousPWS = millis();
+      pws();
+    }
+    THINGSPEAK();
   }
 }
 
@@ -4090,39 +4124,6 @@ void loop()
     writeData();
     gettime();
     Email();
-    if (StringLineaMeteo == "enable")
-    {
-      lineameteo();
-    }
-    if (DEVICE2OTA == "enable")
-    {
-      ESP.restart();
-    }
-    if (millis() - previousWEATHERCLOUD >= UPLOADWEATHERCLOUD)
-    {
-      previousWEATHERCLOUD = millis();
-      push_to_weathercloud();
-      // pws();
-    }
-    if (millis() - previousWUNDERGROUND >= UPLOADWUNDERGROUND)
-    {
-      previousWUNDERGROUND = millis();
-      wunderground();
-    }
-    if (BLYNKONOFF == "ON")
-    {
-      if (millis() - previousBLYNK >= UPLOADBLYNK)
-      {
-        previousBLYNK = millis();
-        BlynkFunction();
-      }
-    }
-    if (millis() - previousPWS >= UPLOADPWS)
-    {
-      previousPWS = millis();
-      pws();
-    }
-    THINGSPEAK();
   }
 }
 
